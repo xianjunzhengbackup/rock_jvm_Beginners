@@ -1,4 +1,5 @@
 package lectures.part2.oop
+//test git between tablet and pc
 
 object Generics extends App{
   class MyList[+A]{

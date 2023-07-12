@@ -1,4 +1,8 @@
 package lectures.part2.oop
+/*
+test mandarin:
+
+*/
 
 object AbstractDataTypes extends App{
   //abstract
