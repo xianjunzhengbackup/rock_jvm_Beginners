@@ -42,6 +42,8 @@ object AnonymousClasses extends App{
 
     def add[B >: A](element: B): MyList[B]
 
+    def +[B >:A](anotherList:MyList[B]):MyList[B]
+
     def printElements: String
 
     override def toString: String = "[" + printElements + "]"
@@ -54,6 +56,7 @@ object AnonymousClasses extends App{
     def head: Nothing = throw new NoSuchElementException()
     def tail: MyList[Nothing] = throw new NoSuchElementException()
     def isEmpty: Boolean = true
+    def +[B>:Nothing](anotherList:MyList[B]):MyList[B] = anotherList
     def add[B >: Nothing](element: B): MyList[B] = new Cons(element, Empty)
     override def printElements: String = ""
   }
@@ -71,12 +74,13 @@ object AnonymousClasses extends App{
     }
 
     def +[B>:A](anotherList:MyList[B]):MyList[B] = {
+//      def addList[B>:A](anotherList:MyList[B]):MyList[B] = {
       if(anotherList.isEmpty) this
-      else (new Cons(anotherList.head,this)) + anotherList.tail
+      else new Cons(anotherList.head,(this + anotherList.tail))
     }
     def flatMap[B>:A](f:B=>MyList[B]):MyList[B] ={
       if(isEmpty) Empty
-      else f(h) + t.flatMap(f)
+      else f(h) + tail.flatMap(f)
     }
     def head: A = h
     def tail: MyList[A] = t
