@@ -79,6 +79,10 @@ object 协变和逆变 extends App{
   val DogList = new Cons[Dog](new Dog("dog1"), Empty).add(new Dog("dog2"))
   workWithPets(DogList)
 
+  val aDog = new Dog("another dog")
+  val aPet = aDog
+  println(aPet)
+
   println("-----------------------------逆变------------------------------------------------")
   /*
   现在，假设我们想要将宠物从一个集合复制到另外一个集合，那么我们可以编写一个名
