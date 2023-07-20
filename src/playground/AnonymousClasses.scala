@@ -22,6 +22,14 @@ object AnonymousClasses extends App{
   trait MyPredicate[-T] {
     def test(v:T):Boolean
   }
+
+  class EvenPredicate extends MyPredicate[Int] {
+    override def test(v: Int): Boolean = v % 2 == 0
+  }
+
+  class StringToIntTransformer extends MyTransformer[String, Int] {
+    override def transform(v: String): Int = v.toInt
+  }
   abstract class MyList[+A] {
     /*
     head = first element of the list
@@ -31,6 +39,7 @@ object AnonymousClasses extends App{
     toString => a string representation of the list
      */
     def map[B>:A](f:B=>B):MyList[B]
+    def map[B,A](trans:MyTransformer[B,A]) :MyList[A]
     def filter[B>:A](f:B=>Boolean):MyList[B]
     def flatMap[B>:A](f:B=>MyList[B]):MyList[B]
 
@@ -51,6 +60,7 @@ object AnonymousClasses extends App{
 
   object Empty extends MyList[Nothing] {
     def map[B>:Nothing](f:B=>B) = throw new NoSuchElementException()
+    def map[B,A](trans:MyTransformer[B,A]) :MyList[A] = throw new NoSuchElementException()
     def filter[B>:Nothing](f:B=>Boolean) = this
     def flatMap[B>:Nothing](f:B=>MyList[B]):MyList[B] = this
     def head: Nothing = throw new NoSuchElementException()
@@ -66,6 +76,11 @@ object AnonymousClasses extends App{
     def map[B>:A](f:B=>B):MyList[B] = {
       if (t.isEmpty) new Cons(f(h),Empty)
       else new Cons(f(h),t.map(f))
+    }
+
+    def map[A,B](trans:MyTransformer[A,B]) :MyList[B] ={
+      if(t.isEmpty) new Cons(trans.transform(h),Empty)
+      else new Cons(trans.transform(h),t.map(trans))
     }
     def filter[B>:A](f:B=>Boolean):MyList[B] = {
       if(isEmpty) Empty
@@ -99,6 +114,7 @@ object AnonymousClasses extends App{
     override def transform(v: Int): Int = 3*v
   }
   println(v.map(transformer.transform))
+  println(v.map(n=>3*n))
 
   println(v.filter(n=>n%3==0))
   val predicate = new MyPredicate[Int] {
@@ -107,4 +123,7 @@ object AnonymousClasses extends App{
   println(v.filter(predicate.test))
 
   println(v.flatMap(n=>new Cons(n,new Cons(n+1,Empty))))
+
+  println("-----------------------------------------")
+
 }
