@@ -76,7 +76,8 @@ object AnonymousClasses extends App{
     def +[B>:A](anotherList:MyList[B]):MyList[B] = {
 //      def addList[B>:A](anotherList:MyList[B]):MyList[B] = {
       if(anotherList.isEmpty) this
-      else new Cons(anotherList.head,(this + anotherList.tail))
+//      else new Cons(anotherList.head,( anotherList.tail + this))
+      else new Cons(h, tail + anotherList)
     }
     def flatMap[B>:A](f:B=>MyList[B]):MyList[B] ={
       if(isEmpty) Empty
