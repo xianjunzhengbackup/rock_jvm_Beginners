@@ -38,9 +38,10 @@ object AnonymousClasses extends App{
     add(int) => new list with this element added
     toString => a string representation of the list
      */
-    def map[B>:A](f:B=>B):MyList[B]
+    def map[B](f:A=>B):MyList[B]
     def map[B](trans:MyTransformer[A,B]) :MyList[B]
     def filter[B>:A](f:B=>Boolean):MyList[B]
+    def filter(pre:MyPredicate[A]):MyList[A]
     def flatMap[B>:A](f:B=>MyList[B]):MyList[B]
 
     def head: A
@@ -59,7 +60,7 @@ object AnonymousClasses extends App{
   }
 
   object Empty extends MyList[Nothing] {
-    def map[B>:Nothing](f:B=>B) = throw new NoSuchElementException()
+    def map[B](f:Nothing=>B) = throw new NoSuchElementException()
     def map[B](trans:MyTransformer[Nothing,B]) :MyList[B] = throw new NoSuchElementException()
     def filter[B>:Nothing](f:B=>Boolean) = this
     def flatMap[B>:Nothing](f:B=>MyList[B]):MyList[B] = this
@@ -73,7 +74,7 @@ object AnonymousClasses extends App{
 
   //亦可写成class Cons[A](h: A, t: MyList[A]) extends MyList[A]
   class Cons[A](h: A, t: MyList[A]) extends MyList[A] {
-    def map[B>:A](f:B=>B):MyList[B] = {
+    def map[B](f:A=>B):MyList[B] = {
       if (t.isEmpty) new Cons(f(h),Empty)
       else new Cons(f(h),t.map(f))
     }
@@ -109,12 +110,12 @@ object AnonymousClasses extends App{
 
   val v = (new Cons[Int](3,Empty)).add(1).add(2).add(3)
   println(v)
-  println(v.map[Int](n=>n*2))
-//  val transformer = new MyTransformer[Int] {
-//    override def transform(v: Int): Int = 3*v
-//  }
-//  println(v.map(transformer.transform))
-//  println(v.map(n=>3*n))
+  def Int_Int_M(v:Int):Int = v*3
+  println(v.map(Int_Int_M _))
+  val transformer = new MyTransformer[Int,Int] {
+    override def transform(v: Int): Int = 3*v
+  }
+  println(v.map(transformer))
 
   println(v.filter(n=>n%3==0))
   val predicate = new MyPredicate[Int] {
