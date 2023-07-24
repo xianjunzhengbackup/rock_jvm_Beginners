@@ -39,7 +39,7 @@ object AnonymousClasses extends App{
     toString => a string representation of the list
      */
     def map[B>:A](f:B=>B):MyList[B]
-    def map[B,A](trans:MyTransformer[B,A]) :MyList[A]
+    def map[B](trans:MyTransformer[A,B]) :MyList[B]
     def filter[B>:A](f:B=>Boolean):MyList[B]
     def flatMap[B>:A](f:B=>MyList[B]):MyList[B]
 
@@ -60,7 +60,7 @@ object AnonymousClasses extends App{
 
   object Empty extends MyList[Nothing] {
     def map[B>:Nothing](f:B=>B) = throw new NoSuchElementException()
-    def map[B,A](trans:MyTransformer[B,A]) :MyList[A] = throw new NoSuchElementException()
+    def map[B](trans:MyTransformer[Nothing,B]) :MyList[B] = throw new NoSuchElementException()
     def filter[B>:Nothing](f:B=>Boolean) = this
     def flatMap[B>:Nothing](f:B=>MyList[B]):MyList[B] = this
     def head: Nothing = throw new NoSuchElementException()
@@ -72,13 +72,13 @@ object AnonymousClasses extends App{
   }
 
   //亦可写成class Cons[A](h: A, t: MyList[A]) extends MyList[A]
-  class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
+  class Cons[A](h: A, t: MyList[A]) extends MyList[A] {
     def map[B>:A](f:B=>B):MyList[B] = {
       if (t.isEmpty) new Cons(f(h),Empty)
       else new Cons(f(h),t.map(f))
     }
 
-    def map[A,B](trans:MyTransformer[A,B]) :MyList[B] ={
+    def map[B](trans:MyTransformer[A,B]) :MyList[B] ={
       if(t.isEmpty) new Cons(trans.transform(h),Empty)
       else new Cons(trans.transform(h),t.map(trans))
     }
@@ -109,12 +109,12 @@ object AnonymousClasses extends App{
 
   val v = (new Cons[Int](3,Empty)).add(1).add(2).add(3)
   println(v)
-  println(v.map(n=>n*2))
-  val transformer = new MyTransformer[Int,Int] {
-    override def transform(v: Int): Int = 3*v
-  }
-  println(v.map(transformer.transform))
-  println(v.map(n=>3*n))
+  println(v.map[Int](n=>n*2))
+//  val transformer = new MyTransformer[Int] {
+//    override def transform(v: Int): Int = 3*v
+//  }
+//  println(v.map(transformer.transform))
+//  println(v.map(n=>3*n))
 
   println(v.filter(n=>n%3==0))
   val predicate = new MyPredicate[Int] {
@@ -125,5 +125,8 @@ object AnonymousClasses extends App{
   println(v.flatMap(n=>new Cons(n,new Cons(n+1,Empty))))
 
   println("-----------------------------------------")
+
+  val v_string = new Cons[String]("1",Empty).add("2").add("3").add("4")
+  println(v_string.map(new StringToIntTransformer))
 
 }
