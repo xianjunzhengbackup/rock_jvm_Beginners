@@ -44,6 +44,8 @@ object AnonymousClasses extends App{
     def filter(pre:MyPredicate[A]):MyList[A]
     def flatMap[B>:A](f:B=>MyList[B]):MyList[B]
 
+    def flatMap[B>:A](trans:MyTransformer[A,MyList[B]]):MyList[B]
+
     def head: A
 
     def tail: MyList[A]
@@ -65,6 +67,7 @@ object AnonymousClasses extends App{
     def filter[B>:Nothing](f:B=>Boolean) = this
     def filter(pre:MyPredicate[Nothing]):MyList[Nothing] = this
     def flatMap[B>:Nothing](f:B=>MyList[B]):MyList[B] = this
+    def flatMap[B>:Nothing](trans:MyTransformer[Nothing,MyList[B]]):MyList[B] = this
     def head: Nothing = throw new NoSuchElementException()
     def tail: MyList[Nothing] = throw new NoSuchElementException()
     def isEmpty: Boolean = true
@@ -105,6 +108,10 @@ object AnonymousClasses extends App{
       if(isEmpty) Empty
       else f(h) + tail.flatMap(f)
     }
+
+    def flatMap[B>:A](trans:MyTransformer[A,MyList[B]]):MyList[B] ={
+      trans.transform(h) + tail.flatMap(trans)
+    }
     def head: A = h
     def tail: MyList[A] = t
     def isEmpty: Boolean = false
@@ -123,19 +130,25 @@ object AnonymousClasses extends App{
   }
   println(v.map(transformer))
 
-  println(v.filter(n=>n%3==0))
+  def Int_Int_F(v:Int):Boolean=v%3==0
+  println("---------------------------------")
+  println(v.filter(Int_Int_F _))
   val predicate = new MyPredicate[Int] {
     override def test(v: Int): Boolean = v%3==0
   }
-  println(v.filter(predicate.test _))
+  println(v.filter(predicate))
   val even_p=new EvenPredicate
   println(v.filter(even_p))
 
-  println(v.flatMap(n=>new Cons(n,new Cons(n+1,Empty))))
+//  println(v.flatMap(n=>new Cons(n,new Cons(n+1,Empty))))
 
   println("-----------------------------------------")
 
   val v_string = new Cons[String]("1",Empty).add("2").add("3").add("4")
   println(v_string.map(new StringToIntTransformer))
 
+  println("-----------------test flatmap with Transformer---------------------")
+  val flat_Transformer = new MyTransformer[Int,MyList[Int]] {
+    override def transform(v: Int): MyList[Int] = new Cons(v,Empty)
+  }
 }
