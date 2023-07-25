@@ -63,6 +63,7 @@ object AnonymousClasses extends App{
     def map[B](f:Nothing=>B) = throw new NoSuchElementException()
     def map[B](trans:MyTransformer[Nothing,B]) :MyList[B] = throw new NoSuchElementException()
     def filter[B>:Nothing](f:B=>Boolean) = this
+    def filter(pre:MyPredicate[Nothing]):MyList[Nothing] = this
     def flatMap[B>:Nothing](f:B=>MyList[B]):MyList[B] = this
     def head: Nothing = throw new NoSuchElementException()
     def tail: MyList[Nothing] = throw new NoSuchElementException()
@@ -82,6 +83,11 @@ object AnonymousClasses extends App{
     def map[B](trans:MyTransformer[A,B]) :MyList[B] ={
       if(t.isEmpty) new Cons(trans.transform(h),Empty)
       else new Cons(trans.transform(h),t.map(trans))
+    }
+
+    def filter(pre:MyPredicate[A]):MyList[A] = {
+      if(pre.test(h)) new Cons(h,t.filter(pre))
+      else t.filter(pre)
     }
     def filter[B>:A](f:B=>Boolean):MyList[B] = {
       if(isEmpty) Empty
@@ -121,7 +127,9 @@ object AnonymousClasses extends App{
   val predicate = new MyPredicate[Int] {
     override def test(v: Int): Boolean = v%3==0
   }
-  println(v.filter(predicate.test))
+  println(v.filter(predicate.test _))
+  val even_p=new EvenPredicate
+  println(v.filter(even_p))
 
   println(v.flatMap(n=>new Cons(n,new Cons(n+1,Empty))))
 
