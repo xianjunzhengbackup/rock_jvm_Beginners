@@ -140,7 +140,7 @@ object AnonymousClasses extends App{
   val even_p=new EvenPredicate
   println(v.filter(even_p))
 
-//  println(v.flatMap(n=>new Cons(n,new Cons(n+1,Empty))))
+
 
   println("-----------------------------------------")
 
@@ -152,4 +152,7 @@ object AnonymousClasses extends App{
     override def transform(v: Int): MyList[Int] = new Cons(v,new Cons(v+1,Empty))
   }
   println(v.flatMap(flat_Transformer))
+
+  def make_list(v:Int):MyList[Int] = new Cons(v,new Cons(v+1,Empty))
+  println(v.flatMap(make_list _))
 }
