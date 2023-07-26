@@ -149,6 +149,7 @@ object AnonymousClasses extends App{
 
   println("-----------------test flatmap with Transformer---------------------")
   val flat_Transformer = new MyTransformer[Int,MyList[Int]] {
-    override def transform(v: Int): MyList[Int] = new Cons(v,Empty)
+    override def transform(v: Int): MyList[Int] = new Cons(v,new Cons(v+1,Empty))
   }
+  println(v.flatMap(flat_Transformer))
 }
