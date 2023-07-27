@@ -17,10 +17,10 @@ String，而我们需要响应当天的活动信息。下面是一个示例，�
     */
     def activity(day: String): Unit = { 
         day match { 
-            case "Sunday" => print("Eat, sleep, repeat... ") 
-            case "Saturday" => print("Hang out with friends... ") 
-            case "Monday" => print("...code for fun...") 
-            case "Friday" => print("...read a good book...") 
+            case "Sunday" => println("Eat, sleep, repeat... ")
+            case "Saturday" => println("Hang out with friends... ")
+            case "Monday" => println("...code for fun...")
+            case "Friday" => println("...read a good book...")
         } 
     } 
 
