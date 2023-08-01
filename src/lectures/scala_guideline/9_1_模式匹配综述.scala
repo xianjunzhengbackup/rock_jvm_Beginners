@@ -324,6 +324,43 @@ String，而我们需要响应当天的活动信息。下面是一个示例，�
     =>被执行的时候，match 表达式将自动将 input 作为参数发送给 unapply()方法。当我
     们执行前面的 3 个代码片段时（请记住将对服务的示例调用放置到你代码文件的末尾，以保
     证能被调用到），我们将得到如下输出：*/
+    /*
+    补充：关于unapply
+    An extractor object is an object with an unapply method.
+    Whereas the apply method is like a constructor which takes arguments and creates an object,
+    the unapply takes an object and tries to give back the arguments.
+    This is most often used in pattern matching and partial functions.
+    import scala.util.Random
+
+    object CustomerID {
+
+      def apply(name: String) = s"$name--${Random.nextLong()}"
+
+      def unapply(customerID: String): Option[String] = {
+        val stringArray: Array[String] = customerID.split("--")
+        if (stringArray.tail.nonEmpty) Some(stringArray.head) else None
+      }
+    }
+
+    val customer1ID = CustomerID("Sukyoung")  // Sukyoung--23098234908
+    customer1ID match {
+      case CustomerID(name) => println(name)  // prints Sukyoung
+      case _ => println("Could not extract a CustomerID")
+    }
+    The apply method creates a CustomerID string from a name.
+    The unapply does the inverse to get the name back.
+    When we call CustomerID("Sukyoung"), this is shorthand syntax for calling CustomerID.apply("Sukyoung").
+    When we call case CustomerID(name) => println(name),
+    we’re calling the unapply method with CustomerID.unapply(customer1ID).
+
+    Since a value definition can use a pattern to introduce a new variable,
+    an extractor can be used to initialize the variable,
+    where the unapply method supplies the value.
+
+    val customer2ID = CustomerID("Nico")
+    val CustomerID(name) = customer2ID
+    println(name)  // prints Nico
+     */
     StockService process "GOOG"
     StockService process "IBM"
     StockService process "ERR"
@@ -339,6 +376,72 @@ String，而我们需要响应当天的活动信息。下面是一个示例，�
     让我们进一步改进一下这个示例。现在，我们将能够请求股票报价，作为我们的服务的
     下一项任务。假设为此所到达的消息的格式是“SYMBOL:PRICE”。我们需要使用模式匹配
     来匹配这种格式，并采取进一步的动作
+    下面是修改过后的 process()方法，用来处理这
+    项额外的任务。
      */
+    object AnotherStockService {
+        def process(input: String): Unit = {
+            input match {
+                case Symbol() => println(s"Look up price for valid symbol $input")
+                case ReceiveStockPrice(symbol, price) =>
+                    println(s"Received price $$$price for symbol $symbol")
+                case _ => println(s"Invalid input $input")
+            }
+        }
+    }
+    /*
+    我们添加了一个新的 case 语句，使用还未编写的提取器 ReceiveStockPrice。这个提
+    取器不同于我们之前编写的 Symbol 提取器—它只是简单地返回一个 Boolean 结果。而
+    ReceiveStockPrice 需要解析输入，并返回两个值，即 symbol 和 price。在 case 语句中。
+    它们作为参数指定给了 ReceiveStockPrice；然而，它们并不会传入参数。它们是从提取器
+    中传出的参数。因此，我们并没有发送 symbol 和 price。相反，我们正在接收它们。
+    让我们看一下 ReceiveStockPrice 提取器。正如你所期望的，它有一个 unapply()
+    方法，该方法将会根据字符：对输入进行切分，并返回一个股票代码和价格的元组。然而，
+    还需要注意的一点是，输入可能不满足“SYMBOL:PRICE”这样的格式。所以为了处理这种可
+    能的情况，这个方法的返回类型应该是 Option[(String,Double)]，在运行时，我们将接
+    收到 Some((String,Double))或者 None（参见 5.2.3 节）。下面是 ReceiveStockPrice
+    提取器的代码。
+     */
+    object ReceiveStockPrice {
+        def unapply(input: String): Option[(String, Double)] = {
+            try {
+                if (input contains ":") {
+                    val splitQuote = input split ":"
+                    Some((splitQuote(0), splitQuote(1).toDouble))
+                } else {
+                    None
+                }
+            } catch {
+                case _: NumberFormatException => None
+            }
+        }
+    }
 
+    AnotherStockService process "GOOG"
+    AnotherStockService process "GOOG:310.84"
+    AnotherStockService process "GOOG:BUY"
+    AnotherStockService process "ERR:12.21"
+    /*
+    面的代码可以很好地处理前 3 个请求。它接收了有效的输入，并拒绝了无效的。然而，
+    对于最后的请求，其处理并不顺利。即使输入了有效的格式，还是应该因为无效的股票代码
+    ERR 而被拒绝。我们有两种方式来处理这种情况。一种是在 ReceiveStockPrice 中检查
+    该股票代码是否有效。但是，这是一件导致重复的工作。另一种是在一个 case 语句中应用
+    多个模式匹配。让我们修改 process()方法来做到这一点。
+    case ReceiveStockPrice(symbol @ Symbol(), price) =>
+    println(s"Received price $$$price for symbol $symbol")
+    我们首先应用了 ReceiveStockPrice 提取器，如果成功，它将返回一个结果对。在
+    第一个结果（symbol）上，我们进一步应用了 Symbol 提取器来验证股票代码。我们可以
+    使用一个模式变量，然后在其后面跟上@符号，在该股票代码从一个提取器到另外一个提取
+    器的过程中对股票代码进行拦截，如上面的代码所示。
+    现在，如果重新运行这个修改后的服务，我们将会得到如下的输出结果：
+    Look up price for valid symbol GOOG
+    Received price $310.84 for symbol GOOG
+    Invalid input GOOG:BUY
+    Invalid input ERR:12.21
+    你看到了提取器是多么的强大。它们使你几乎可以匹配任意模式。在 unapply()方法
+    中，你几乎可以控制模式匹配的整个过程，并返回你想要的任意多的组成部分。
+    如果输入的格式很复杂，你将可能极大地受益于提取器的能力。然而，如果格式相对简单，
+    例如使用正则表达式就能非常容易表达的东西，你可能就不会想要自定义一个提取器了，而是
+    想事半功倍。
+     */
 }
