@@ -203,37 +203,35 @@ object 函数值和闭包_6 extends App{
   注于 REPL 中的信息。它展示了一系列（3 次）转换。链路中的每一个函数都接收一个 Int
   参数，并返回一个部分应用函数。然而最后一个是例外，它返回一个 Unit。
   在我们使用柯里化时部分应用函数的创建是 Scala 的内部逻辑。从实用的角度，柯里化
-  帮助我们改善了传递函数值的语法。让我们用柯里化重写前一节中的 inject()方法。
-  FunctionValuesAndClosures/Inject4.scala
-  def inject(arr: Array[Int], initial: Int)(operation: (Int, Int) => Int): Int = {
-  var carryOver = initial
-  arr.foreach(element => carryOver = operation(carryOver, element))
-  carryOver
+  帮助我们改善了传递函数值的语法。让我们用柯里化重写前一节中的 inject()方法。*/
+  def Anotherinject(arr: Array[Int], initial: Int)(operation: (Int, Int) => Int): Int = {
+    var carryOver = initial
+    arr.foreach(element => carryOver = operation(carryOver, element))
+    carryOver
   }
+  /*
   两个版本的 inject()方法的唯一区别在于参数列表变成了多个。第一个参数列表接收
-  异步社区会员 雄鹰1(13027310973) 专享 尊重版权
-  6.5 参数的占位符·97
   两个参数，第二个只接收一个函数值。
   现在我们就没有必要再在括号中以逗号分隔的参数传递函数值了。我们可以用更美观的
-  大括号来调用这个方法。
-  FunctionValuesAndClosures/Inject4.scala
-  val sum: Int = inject(array, 0) { (carryOver, elem) => carryOver + elem }
-  我们成功地使用柯里化将函数值从括号中移了出来。非常美观，但我们还可以更进一
-  步—如果说函数值中的参数只使用一次，其本身可以更加简洁，且看 6.5 节。
-  6.5 参数的占位符
+  大括号来调用这个方法。*/
+  val sum3: Int = Anotherinject(Array(1,2,3,4,5,6), 0) { (carryOver, elem) => carryOver + elem }
+  println(s"sum3 for Array(1,2,3,4,5,6) is $sum")
+  /*我们成功地使用柯里化将函数值从括号中移了出来。非常美观，但我们还可以更进一
+  步—如果说函数值中的参数只使用一次，其本身可以更加简洁，且看 6.5 节。*/
+  println("---------6.5 参数的占位符---------")
+  /*
   Scala 用下划线（_）这个记号来表示一个函数值的参数。一开始下划线或许会让你觉得
   很隐晦，你一旦习惯了，就会发现这种写法能让代码变得简洁且容易修改。你可以用这个符
   号表示一个参数，但只有在你打算在这个函数值中只引用这个参数一次时可以这样做。你可
   以在一个函数值中多次使用下划线，但每个下划线都表示相继的不同参数。我们来看一个这
-  个特性的例子。在下面的代码中，我们有一个带有两个参数的函数值。
-  FunctionValuesAndClosures/Underscore.scala
-  val arr = Array(1, 2, 3, 4, 5)
-  val total = (0 /: arr) { (sum, elem) => sum + elem }
-  在这个例子中，方法/:用于计算变量 arr 表示的数组中元素的和。在这个函数值中，我
+  个特性的例子。在下面的代码中，我们有一个带有两个参数的函数值。*/
+  val arr3 = Array(1, 2, 3, 4, 5)
+  val total3 = (0 /: arr3) { (sum, elem) => sum + elem }
+  /*在这个例子中，方法/:用于计算变量 arr 表示的数组中元素的和。在这个函数值中，我
   们对 sum 和 elem 参数都只使用一次。我们可以用下划线来替代这两个名字，而不需要为这
-  两个参数显式命名。
-  FunctionValuesAndClosures/Underscore.scala
-  val total = (0 /: arr) { _ + _ }
+  两个参数显式命名。*/
+  val total33 = (0 /: arr3) { _ + _ }
+  /*
   _的第一次出现代表第一个参数（sum），这个值在函数的调用中产生并传递到下一次调
   用。第二次出现代表第二个参数（elem），它是数组中的一个元素。
   让我们慢慢领会其中的含义—如果你觉得它表意隐晦，也很正常。一旦你很好地
@@ -242,18 +240,17 @@ object 函数值和闭包_6 extends App{
   当显式定义参数时，除了提供参数名，还可以定义参数的类型。当使用下划线时，名字
   和类型都会被隐式指定。如果 Scala 无法断定类型，它就会报错。在那种情况下，可以给_指
   定类型，也可以使用带类型的参数名。
-  异步社区会员 雄鹰1(13027310973) 专享 尊重版权
-  98·第 6 章 函数值和闭包
   有人或许会认为使用下划线代码太精简且难以阅读—sum 和 elem 这样的名字就非常
   有助于理解代码。这是一个正确的观点。但是，与此同时，尤其是在单个变量只出现一次时，
   给变量命名并马上使用这个参数就没有那么有用了。在这种情况下，你或许更想用_。要在
   合适的地方使用_，以使代码简洁且不失可读性，例如，下面这个例子。
-  FunctionValuesAndClosures/Underscore.scala
   val negativeNumberExists1 = arr.exists { elem => elem < 0 }
-  val negativeNumberExists2 = arr.exists { _ < 0 }
-  下划线替换了显式参数 elem，并减少了函数值中的噪声。我们还可以用其他手段进一
-  步减少代码中的噪声，且看 6.6 节。
-  6.6 参数路由
+  val negativeNumberExists2 = arr.exists { _ < 0 }*/
+  println(Array(-1,-2,-3,4,5,6).exists{_<0})
+  /*下划线替换了显式参数 elem，并减少了函数值中的噪声。我们还可以用其他手段进一
+  步减少代码中的噪声，且看 6.6 节。*/
+  println("---------6.6 参数路由---------")
+  /*
   只要有意义，你有很多办法把自己见过的函数值变得更简洁。我们先创建一个在一组值
   中找最大值的例子，在其中使用 Math.max 方法来比较两个值（以获得其中较大者）。
   val largest =
@@ -264,69 +261,61 @@ object 函数值和闭包_6 extends App{
   val largest = (Integer.MIN_VALUE /: arr) { Math.max(_, _) }
   _不仅能表示单个参数，也能表示整个参数列表。因此我们可以将对 max()的调用改成
   如下形式：
-  val largest = (Integer.MIN_VALUE /: arr) { Math.max _ }
-  上面的代码中，_表示整个参数列表，也就是(参数 1, 参数 2)。如果只是为了按照同样
+  val largest = (Integer.MIN_VALUE /: arr) { Math.max _ }*/
+  println((Integer.MIN_VALUE /: arr3){Math.max _})
+  /*上面的代码中，_表示整个参数列表，也就是(参数 1, 参数 2)。如果只是为了按照同样
   的顺序将接收到的参数传递给底层的方法，我们甚至不需要_这种形式。我们可以进一步简
-  化前面的代码：
-  val largest = (Integer.MIN_VALUE /: arr) { Math.max }
-  为了验证这段代码在语法上的正确性，Scala 编译器做了很多工作。首先，编译器会检查
+  化前面的代码：*/
+  val largest = (Integer.MIN_VALUE /: arr3) { Math.max }
+  println(largest)
+  /*为了验证这段代码在语法上的正确性，Scala 编译器做了很多工作。首先，编译器会检查
   方法/:的函数签名，该签名决定了该方法接收两个参数列表—第一个参数列表接收一个对
   象，第二参数列表接收一个函数值。然后，编译器会要求这个函数值接收两个参数。一旦编
   译器推导出所接收的函数值的签名，那么它就会检查这个函数值是否接收两个参数。本例中
   的函数值没有用=>符号，我们只提供了一个实现，尽管我们没有指定 max()方法的参数，但
   是编译器也会知道这个方法接收两个参数。编译器让函数签名中的两个参数和 max()方法的
   两个参数对号入座，并最终执行正确的参数路由。
-  异步社区会员 雄鹰1(13027310973) 专享 尊重版权
-  6.7 复用函数值·99
   在编译检查期间，如果其中任何一步的类型推断失败，编译器都会报错。例如，假设我
   们在函数值中调用了一个接收两个参数的方法，但是我们一个参数都没指定。在这种情况下，
   编译器就会报错说，即使算上隐式参数，目前也没有足够的参数传递给这个方法。
   调整 Scala 的简洁度到一个折中点，以达到你对可读性的要求。在利用 Scala 代码简洁性
   的同时，不要让代码变得含义模糊，一定要尽力保持在一个平衡点上。
   我们已经了解了定义函数值的不同方式。函数值很简洁，但是在不同的调用中重复同一
-  个函数值就会导致代码冗余。我们来看一下去除这种冗余的各种方法。
-  6.7 复用函数值
-  函数值能够帮助我们写出复用度更高的代码并消除代码冗余。但是，将一段代码作为参
+  个函数值就会导致代码冗余。我们来看一下去除这种冗余的各种方法。*/
+  println("-------------6.7 复用函数值-------------")
+  /*函数值能够帮助我们写出复用度更高的代码并消除代码冗余。但是，将一段代码作为参
   数嵌入方法中并不能做到代码复用。避免这种冗余很简单—可以创建对函数值的引用，然
   后复用它们。让我们看一个例子。
   我们来创建一个 Equipment 类，它接收一段计算逻辑用作模拟。可以将计算逻辑作为
-  函数值传递给构造器。
-  FunctionValuesAndClosures/Equipment.scala
+  函数值传递给构造器。*/
   class Equipment(val routine: Int => Int) {
-  def simulate(input: Int): Int = {
-  print("Running simulation...")
-  routine(input)
+    def simulate(input: Int): Int = {
+      print("Running simulation...")
+      routine(input)
+    }
   }
-  }
-  在创建 Equipment 的实例时，我们可以将函数值作为一个参数传递给构造器，像下
-  面这样。
-  FunctionValuesAndClosures/EquipmentUseNotDry.scala
-  object EquipmentUseNotDry extends App {
-  val equipment1 = new Equipment(
-  { input => println(s"calc with $input"); input })
-  val equipment2 = new Equipment(
-  { input => println(s"calc with $input"); input })
-  equipment1.simulate(4)
-  equipment2.simulate(6)
-  }
-  输出结果如下：
+  /*在创建 Equipment 的实例时，我们可以将函数值作为一个参数传递给构造器，像下
+  面这样。*/
+    val equipment1 = new Equipment(
+      { input => println(s"calc with $input"); input })
+    val equipment2 = new Equipment(
+      { input => println(s"calc with $input"); input })
+    equipment1.simulate(4)
+    equipment2.simulate(6)
+  /*输出结果如下：
   Running simulation...calc with 4
   Running simulation...calc with 6
-  异步社区会员 雄鹰1(13027310973) 专享 尊重版权
-  100·第 6 章 函数值和闭包
   在这段代码中，我们想在两个 Equipment 实例中使用相同的计算代码。遗憾的是，这
   段计算代码重复了。这段代码并不遵循 DRY 原则，如果想改变计算逻辑，我们就必须两个
   一起改。如果计算逻辑只写一次，然后复用，就非常好。我们可以把这个函数值赋值给一个
-  val 变量，以便复用，如下所示。
-  FunctionValuesAndClosures/EquipmentUseDry.scala
-  object EquipmentUseDry extends App {
+  val 变量，以便复用，如下所示。*/
   val calculator = { input: Int => println(s"calc with $input"); input }
-  val equipment1 = new Equipment(calculator)
-  val equipment2 = new Equipment(calculator)
-  equipment1.simulate(4)
-  equipment2.simulate(6)
-  }
-  输出结果如下：
+  val equipment11 = new Equipment(calculator)
+  val equipment22 = new Equipment(calculator)
+  equipment11.simulate(4)
+  equipment22.simulate(6)
+  equipment22 simulate 6
+  /*输出结果如下：
   Running simulation...calc with 4
   Running simulation...calc with 6
   我们把函数值存储在了一个名为 calculator 的引用中。在定义这个函数值的时候，需
@@ -338,18 +327,13 @@ object 函数值和闭包_6 extends App{
   惯了在函数或者方法中定义引用或者变量，所以这样做会让我们觉得更加自然。然而，在 Scala
   中，我们可以在函数中定义完整的函数。因此，为了达到代码复用的目的，还有一种更加符
   合习惯的方法。Scala 的灵活性能够让我们做正确的事更加容易。我们可以在预期接收函数值
-  的地方传入一个常规函数。
-  FunctionValuesAndClosures/EquipmentUseDry2.scala
-  object EquipmentUseDry2 extends App {
-  def calculator(input: Int) = { println(s"calc with $input"); input }
-  val equipment1 = new Equipment(calculator)
-  val equipment2 = new Equipment(calculator)
-  equipment1.simulate(4)
-  equipment2.simulate(6)
-  }
-  我们将计算逻辑创建为一个函数，在创建这两个实例的时候，将函数名作为参数传递给
-  异步社区会员 雄鹰1(13027310973) 专享 尊重版权
-  6.8 部分应用函数·101
+  的地方传入一个常规函数。*/
+  def calculator1(input: Int) = { println(s"calc with $input"); input }
+  val equipment111 = new Equipment(calculator1)
+  val equipment222 = new Equipment(calculator1)
+  equipment111.simulate(4)
+  equipment222.simulate(6)
+  /*我们将计算逻辑创建为一个函数，在创建这两个实例的时候，将函数名作为参数传递给
   构造器。在 Equipment 类中，Scala 很自然地将函数名视为函数值的引用。
   在使用 Scala 编程时，我们不需要在良好的设计原则和代码质量之间做折中。Scala 反而
   提倡良好的实践，我们在编码时应该利用 Scala 的特性努力做到这一点。
