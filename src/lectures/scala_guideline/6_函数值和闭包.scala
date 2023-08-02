@@ -218,6 +218,22 @@ object 函数值和闭包_6 extends App{
   println(s"sum3 for Array(1,2,3,4,5,6) is $sum")
   /*我们成功地使用柯里化将函数值从括号中移了出来。非常美观，但我们还可以更进一
   步—如果说函数值中的参数只使用一次，其本身可以更加简洁，且看 6.5 节。*/
+ /*
+  * │scala> arr.foreach(elem=>sum=sum+elem)        works
+  * │scala> arr foreach (elem=>sum=sum+elem)       works
+  *
+  * │scala> arr.foreach(_=>sum=sum+_)
+  *│<console>:14: error: missing parameter type for expanded
+  │function ((x$2: <error>) => sum.$plus(x$2))
+   arr.foreach(_=>sum=sum+_)
+
+   arr.foreach{elem=>sum=sum+elem}                 works
+   arr foreach {elem=>sum=sum+elem}                works
+
+   │scala> arr foreach elem=>sum=sum+elem
+   │<console>:1: error: ';' expected but '=>' found.
+   arr foreach elem=>sum=sum+elem
+  */
   println("---------6.5 参数的占位符---------")
   /*
   Scala 用下划线（_）这个记号来表示一个函数值的参数。一开始下划线或许会让你觉得
