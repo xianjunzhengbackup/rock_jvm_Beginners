@@ -1,7 +1,7 @@
 package scala_guideline
 
 
-object 模式匹配_9_1 extends App {
+object 模式匹配_9 extends App {
 
     /*
     9.1 模式匹配综述 
