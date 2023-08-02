@@ -24,9 +24,10 @@ String，而我们需要响应当天的活动信息。下面是一个示例，�
         }
     }
 
-    List("Monday", "Sunday", "Saturday").foreach {
-        activity
-    }
+   // List("Monday", "Sunday", "Saturday").foreach {
+   //     activity
+   // }
+   List("Monday","Sunday","Saturday") foreach activity
     println("------------------9.1.2 匹配通配符-----------------------")
 
     object DayOfWeek extends Enumeration {
@@ -273,6 +274,7 @@ String，而我们需要响应当天的活动信息。下面是一个示例，�
                 case _ => println(s"Excuse me, why did you send me $thing")
             }
         }
+
     }
 
     ThingsAcceptor.acceptStuff(Apple())
@@ -307,6 +309,7 @@ String，而我们需要响应当天的活动信息。下面是一个示例，�
             }
         }
     }
+    println(Symbol())
     /*
     process()方法使用了尚未定义的 Symbol 提取器。如果该提取器认为输入的股票代码
     有效，那么它将返回 true；否则，返回 false。如果返回 true，那么将会执行和 case
@@ -314,6 +317,7 @@ String，而我们需要响应当天的活动信息。下面是一个示例，�
     匹配将继续尝试下一个 case 语句。现在，让我们来看一下缺失的部分，即提取器。
      */
     object Symbol {
+        def apply() = this
         def unapply(symbol: String): Boolean = {
             // 你查找了数据库，但是只识别了 GOOG 和 IBM
             symbol == "GOOG" || symbol == "IBM"
