@@ -42,12 +42,16 @@ object 函数值和闭包_6 extends App{
   首先，通过循环遍历区间，将公共代码提取成一个名为 totalResultOverRange()
   的方法。
    */
-  def totalResultOverRange(number: Int, codeBlock: Int => Int) = {
-    var result = 0
-    for (i <- 1 to number) {
-      result += codeBlock(i)
-    }
-    result
+  //def totalResultOverRange(number: Int, codeBlock: Int => Int) = {
+  //  var result = 0
+  //  for (i <- 1 to number) {
+  //    result += codeBlock(i)
+  //  }
+  //  result
+  //}
+  def totalResultOverRange(number:Int, codeBlock: Int=>Int):Int = {
+    if(number > 1) codeBlock(number) + totalResultOverRange(number-1,codeBlock)
+    else codeBlock(1)
   }
   /*
   我们为方法 totalResultOverRange()定义了两个参数：第一个参数是 Int 类型的，
@@ -141,30 +145,26 @@ object 函数值和闭包_6 extends App{
   val max = inject(array, Integer.MIN_VALUE, (carry, elem) => Math.max(carry, elem))
   println(s"Max of elements in array is $max")
   /*
-  6.3 具有多个参数的函数值·95
-  val max = inject(array, Integer.MIN_VALUE, (carry, elem) => Math.max(carry, elem))
-  println(s"Max of elements in array is $max")
-  作为参数值传递给第二次调用的 inject()函数的函数值会返回传给它的两个参数中的
-  较大值。
-  下面是前面两次调用 inject()方法的输出：
-  Sum of elements in array is 21
-  Max of elements in array is 6
   上面的例子帮助我们了解了如何传递多个参数。然而，为了遍历集合中的元素并执行操作，
   我们不必去实现自己的 inject()方法。Scala 标准库已经内置了这种方法。即 foldLeft()方
-  法。下面是使用内置的 foldLeft()方法来获取数组中元素的总和和最大值的例子：
-  val array = Array(2, 3, 5, 1, 6, 4)
-  val sum = array.foldLeft(0) { (sum, elem) => sum + elem }
-  val max = array.foldLeft(Integer.MIN_VALUE) { (large, elem) =>
+  法。下面是使用内置的 foldLeft()方法来获取数组中元素的总和和最大值的例子：*/
+  val array1 = Array(2, 3, 5, 1, 6, 4)
+  val sum1 = array1.foldLeft(0) { (sum, elem) => sum + elem }
+  val max1 = array1.foldLeft(Integer.MIN_VALUE) { (large, elem) =>
   Math.max(large, elem)
   }
-  println(s"Sum of elements in array is $sum")
-  println(s"Max of elements in array is $max")
+  println(s"Sum of elements in array is $sum1")
+  println(s"Max of elements in array is $max1")
+  /*
   为 了 使 代 码 更 加 简 洁 ， Scala 选 择了 一 些 方 法 并 为 它 们 定 义 了 一 些 简 称 和 记 号。
   foldLeft()方法有一个等效的/:操作符。我们可以用 foldLeft()或等效的/:操作符执
   行先前的操作。以冒号（:）结尾的方法在 Scala 中有特殊含义，8.5 节将介绍相关知识。让
-  我们快速浏览一下如何使用该等效操作符而不是 foldLeft()：
-  val sum = (0 /: array) ((sum, elem) => sum + elem)
-  val max = (Integer.MIN_VALUE /: array) { (large, elem) => Math.max(large, elem) }
+  我们快速浏览一下如何使用该等效操作符而不是 foldLeft()：*/
+  val sum2 = (0 /: array1) ((sum, elem) => sum + elem)
+  val max2 = (Integer.MIN_VALUE /: array1) { (large, elem) => Math.max(large, elem) }
+  println(s"Sum2 of elements in array1 is $sum2")
+  println(s"max2 of elements in array1 is $max2")
+  /*
   细心的读者可能已经注意到函数值被放到了大括号中，而不是和使用 foldLeft()方法
   时一样作为一个参数。这比将这些函数作为参数放在括号中好看多了。但是，如果在 inject()
   方法上尝试以下操作，我们将收到错误提示。
@@ -177,17 +177,17 @@ object 函数值和闭包_6 extends App{
   val sum = inject(array, 0) {(carryOver, elem) => carryOver + elem}
   ^
   one error found
-  异步社区会员 雄鹰1(13027310973) 专享 尊重版权
-  96·第 6 章 函数值和闭包
   这不是我们想要看到的。在享用那种和库方法一样的大括号效果之前，我们必须再学习
-  一个概念—柯里化（currying）。
-  6.4 柯里化
+  一个概念—柯里化（currying）。*/
+  println("--------------6.4 柯里化------------")
+  /*
   Scala 中的柯里化（currying）会把接收多个参数的函数转化为接收多个参数列表的函数。
   如果你会用同样的一组参数多次调用一个函数，你就能用柯里化去除噪声并使代码更加有趣。
   我们来看一下 Scala 对柯里化做了怎样的支持。编写一个带有多个参数列表，每个参数
   列表只有一个参数的方法，而不要编写一个带有一个参数列表，含有多个参数的方法；在每
-  个参数列表中，也可以接受多个参数。也就是说，要写成这样 def foo(a: Int)(b: Int)(c:
-  Int) {}，而不是 def foo(a: Int, b: Int, c: Int) = {}。你可以这样调用，如
+  个参数列表中，也可以接受多个参数。也就是说，要写成这样 
+  def foo(a: Int)(b: Int)(c:Int) {}，
+  而不是 def foo(a: Int, b: Int, c: Int) = {}。你可以这样调用，如
   foo(1)(2)(3)、foo(1){2}{3}，甚至可以是 foo{1}{2}{3}。
   我们来检验一下，在用多个参数列表定义一个方法时，到底发生了什么。看一下下面这
   个交互式 REPL 会话：
