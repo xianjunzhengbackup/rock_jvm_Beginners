@@ -448,4 +448,115 @@ String，而我们需要响应当天的活动信息。下面是一个示例，�
     例如使用正则表达式就能非常容易表达的东西，你可能就不会想要自定义一个提取器了，而是
     想事半功倍。
      */
+    println("--------9.4.2 正则表达式----------")
+    /*
+    Scala 通过 scala.util.matching 包中的类对正则表达式提供了支持。对正则表达式
+    的详细讨论参阅 Jeffrey E. F. Friedl 的 Mastering Regular Expressions [Fri97]①一书。创建正则表
+    达式时，使用的是该包中的 Regex 类的实例。让我们创建一个正则表达式，并用其来检查给
+    定的字符串是否包含 Scala 或者 scala 这个词。
+     */
+    val pattern = "(S|s)cala".r
+    val str = "Scala is scalable and cool"
+    println(pattern findFirstIn str)
+  /*
+  我们创建了一个字符串，并调用它上面的 r 方法。Scala 隐式地将 String 转换为了
+  StringOps②，并调用该方法以获取 Regex 类的实例。当然，如果我们的正则表达式需要转
+  义字符，那么我们最好使用原始字符串而不是普通字符串。编写和阅读"""\d2:\d2:\
+  d4"""比"\\d2:\\d2:\\d4"容易多了。
+  要找到正则表达式的第一个匹配项，只需要调用 findFirstln()方法即可。在上面的
+  例子中，该调用将会在文本中找到 Scala 这个词。
+  如果不是只查找第一个匹配项，而是希望查找所匹配的单词的所有匹配项，那么我们便
+  可以使用 findAllIn()方法。
+   */
+  println((pattern findAllIn str).mkString(", "))
+  /*
+  这将返回所有匹配的单词的集合。在这个例子中将是(Scala, scala)。最后，我们使
+  用了 mkString()方法将生成的列表元素串联在一起。
+  如果我们想要替换匹配到的文本，那么可以使用 replaceFirstIn()方法来替换第一
+  个匹配项（如下例所示），或者使用 replaceAllIn()方法来替换所有匹配项。
+   */
+  println("cool".r replaceFirstIn (str, "awesome"))
+  println("-----------9.4.3 正则表达式作为提取器------------")
+  /*
+  Scala 的正则表达式买一赠一。当你创建了一个正则表达式时，将免费得到一个提取器。
+  Scala 的正则表达式是提取器，所以可以马上将其应用到 case 表达式中。Scala 将放置在括
+  号中的每个匹配项看作是一个模式变量。因此，例如，一方面，"(Sls)cala".r 的 unapply()
+  方法将会保存返回 Option[String]，另一方面，"(Sls)(cala)".r 的 unapply()方
+  法将会返回 Option[(String,String)]。让我们用一个例子来探索这个特性。下面是使
+  用正则表达式匹配“GOOG:price”并提取价格的一种方式。
+   */
+  def process(input: String): Unit = {
+    val GoogStock = """^GOOG:(\d*\.\d+)""".r
+    input match {
+      case GoogStock(price) => println(s"Price of GOOG is $$$price")
+      case _ => println(s"not processing $input")
+    }
+  }
+
+  process("GOOG:310.84")
+  process("GOOG:310")
+  process("IBM:84.01")
+  /*
+  我们创建了一个正则表达式，用来匹配以“GOOG:”开头，后面跟着一个正的十进制数
+  的字符串。我们将其存储到一个名为 GoogStock 的 val 中。在幕后，Scala 将会为这个提
+  取器创建了一个 unapply()方法。它将返回与括号内的模式相匹配的值—price。
+  Price of GOOG is $310.84
+  not processing GOOG:310
+  not processing IBM:84.01
+  我们刚刚创建的提取器并不是真正可复用的。它查找股票代码“GOOG”，但是，如果我
+  们想要匹配其他的股票代码，它就不是很有用了。不用做太多工作，我们就可以使其变得可
+  复用。
+   */
+  def Anotherprocess(input: String): Unit = {
+    val MatchStock = """^(.+):(\d*\.\d+)""".r
+    input match {
+      case MatchStock("GOOG", price) => println(s"We got GOOG at $$$price")
+      case MatchStock("IBM", price) => println(s"IBM's trading at $$$price")
+      case MatchStock(symbol, price) => println(s"Price of $symbol is $$$price")
+      case _ => println(s"not processing $input")
+    }
+  }
+
+  Anotherprocess("GOOG:310.84")
+  Anotherprocess("IBM:84.01")
+  Anotherprocess("GE:15.96")
+  /*
+  在这个例子中，我们的正则表达式匹配以任何字符或者数字开头，后面跟着一个冒号，
+  然后是正的十进制数结束的任何字符串。所生成的 unapply()方法将会把:符号的前面和后
+  面部分作为两个单独的模式变量返回。我们可以匹配特定的股票，如“GOOG”和“IBM”，
+  也可以简单地接收发送给我们的任意股票代码。这段代码的输出结果如下：
+  We got GOOG at $310.84
+  IBM's trading at $84.01
+  Price of GE is $15.96
+   */
+  /*
+  9.5 无处不在的下划线字符
+  _（下划线）这个字符在 Scala 中似乎无处不在，我们已经在这本书中看过它很多次了。
+  到目前为止，它可能是 Scala 中使用最广泛的符号。如果知道了它在不同场景下使用的意义，
+  那么在下一次遇到时，你就不会那么惊讶了。下面列出了这个符号在不同场景下的用途清单。
+  • 作为包引入的通配符。例如，在 Scala 中 import java.util._等同于 Java 中的
+  import java.util.*。
+  • 作为元组索引的前缀。对于给定的一个元组 val names = ("Tom", "Jerry")，
+  可以使用 names._1 和 names._2 来分别索引这两个值。
+  • 作为函数值的隐式参数。代码片段 list.map { _ * 2 }和 list.map { e => e
+  * 2 }是等价的。同样，代码片段 list.reduce { _ + _ }和 list.reduce { (a,
+  b) => a + b }也是等价的。
+  • 用于用默认值初始化变量。例如，var min : Int = _将使用 0 初始化变量 min，
+  而 var msg : String = _将使用 null 初始化变量 msg。
+  • 用于在函数名中混合操作符。你应该还记得，在 Scala 中，操作符被定义为方法。例
+  如，用于将元素前插到一个列表中的::()方法。Scala 不允许直接使用字母和数字字
+  符的操作符。例如，foo：是不允许的，但是可以通过使用下划线来绕过这个限制，
+  如 foo_:。
+  • 在进行模式匹配时作为通配符。case _将会匹配任意给定的值，而 case _:Int
+  将匹配任何整数。此外，case <people>{_*}</people>将会匹配名为 people
+  的 XML 元素，其具有 0 个或者多个子元素。
+  • 在处理异常时，在 catch 代码块中和 case 联用。
+  • 作为分解操作的一部分。例如，max(arg: _*)在将数组或者列表参数传递给接受
+  可变长度参数的函数前，将其分解为离散的值。
+  • 用于部分应用一个函数。例如，在代码片段 val square = Math.pow(_: Int,
+  2)中，我们部分应用了 pow()方法来创建了一个 square()函数。
+  _符号的目的是为了使代码更加简洁和富有表现力。开发人员应该根据自己的判断来决定
+  何时使用该符号。只在代码真的变得更加简洁的时候才使用它，也就是说，代码是透明的，
+  而且易于理解和维护。当你觉得代码变得生硬、难以理解或者晦涩时，就避免使用它
+   */
 }
