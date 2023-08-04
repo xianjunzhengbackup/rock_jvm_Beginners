@@ -233,6 +233,16 @@ object 函数值和闭包_6 extends App{
    │scala> arr foreach elem=>sum=sum+elem
    │<console>:1: error: ';' expected but '=>' found.
    arr foreach elem=>sum=sum+elem
+
+   │scala> def test2(a:Int):Int=2*a
+   │test2: (a: Int)Int
+
+   │scala> test2 4
+   │<console>:1: error: ';' expected but integer literal found
+
+   │scala> test2 (4)
+   If it is parameter, has to include () or {}.
+   'arr foreach' can work, because foreach is arr's method not parameter 
   */
   println("---------6.5 参数的占位符---------")
   /*
@@ -252,7 +262,7 @@ object 函数值和闭包_6 extends App{
   用。第二次出现代表第二个参数（elem），它是数组中的一个元素。
   让我们慢慢领会其中的含义—如果你觉得它表意隐晦，也很正常。一旦你很好地
   理解了其中的含义，那么它的可读性就会提升，也将会成为编写 Scala 代码时习以为常
-  的细节。
+  的细节
   当显式定义参数时，除了提供参数名，还可以定义参数的类型。当使用下划线时，名字
   和类型都会被隐式指定。如果 Scala 无法断定类型，它就会报错。在那种情况下，可以给_指
   定类型，也可以使用带类型的参数名。
@@ -354,13 +364,12 @@ object 函数值和闭包_6 extends App{
   在使用 Scala 编程时，我们不需要在良好的设计原则和代码质量之间做折中。Scala 反而
   提倡良好的实践，我们在编码时应该利用 Scala 的特性努力做到这一点。
   没有必要把函数值赋值给变量，直接传递函数名就可以了，这是复用函数值的一种方式，
-  6.8 节中将会介绍其他方式。
-  6.8 部分应用函数
-  调用一个函数，实际上是在一些参数上应用这个函数。如果传递了所有期望的参数，就
+  6.8 节中将会介绍其他方式。*/
+  println("-----------6.8 部分应用函数----------")
+  /*调用一个函数，实际上是在一些参数上应用这个函数。如果传递了所有期望的参数，就
   是对这个函数的完整应用，就能得到这次应用或者调用的结果。然而，如果传递的参数比所
   要求的参数少，就会得到另外一个函数。这个函数被称为部分应用函数。部分应用函数使绑
-  定部分参数并将剩下的参数留到以后填写变得很方便。下面是一个例子。
-  FunctionValuesAndClosures/Log.scala
+  定部分参数并将剩下的参数留到以后填写变得很方便。下面是一个例子。*/
   import java.util.Date
   def log(date: Date, message: String): Unit = {
   //...
@@ -370,21 +379,18 @@ object 函数值和闭包_6 extends App{
   log(date, "message1")
   log(date, "message2")
   log(date, "message3")
-  在这段代码中，log()方法接收两个参数，即 date 和 message。我们想多次调用这个
+  /*在这段代码中，log()方法接收两个参数，即 date 和 message。我们想多次调用这个
   方法，date 的值保持不变但 message 每次用不同的值。将 date 参数部分应用到 log()
   方法中，就可以去除每次调用都要传递同样的 date 参数这类语法噪声。
   在下面的代码样例中，我们首先把一个值绑定到了 date 参数上。我们使用_将第二个参
   数标记为未绑定。其结果是一个部分应用函数，然后我们将它存储到 logWithDateBound
-  这个引用中。现在我们就可以只用未绑定的参数 message 调用这个新方法。
-  FunctionValuesAndClosures/Log.scala
-  val date = new Date(1420095600000L)
-  val logWithDateBound = log(date, _: String)
+  这个引用中。现在我们就可以只用未绑定的参数 message 调用这个新方法。*/
+  val another_date = new Date(1420095600000L)
+  val logWithDateBound = log(another_date, _: String)
   logWithDateBound("message1")
   logWithDateBound("message2")
   logWithDateBound("message3")
-  我们引入 Scala REPL，以帮助我们更好地理解从 log()函数创建的部分应用函数：
-  异步社区会员 雄鹰1(13027310973) 专享 尊重版权
-  102·第 6 章 函数值和闭包
+  /*  我们引入 Scala REPL，以帮助我们更好地理解从 log()函数创建的部分应用函数：
   scala> import java.util.Date
   import java.util.Date
   scala> def log(date: Date, message: String) = println(s"$date ----
@@ -398,46 +404,40 @@ object 函数值和闭包_6 extends App{
   当创建一个部分应用函数的时候，Scala 在内部会创建一个带有特殊 apply()方法的新类。在
   调用部分应用函数的时候，实际上是在调用那个 apply()方法，apply()方法的更多细节可以参
   考 8.1 节。在 Actor 中接收消息进行模式匹配的时候，Scala 会大量应用偏函数①，详见第 13 章。
-  接下来我们深入研究一下函数值的作用域。
-  6.9 闭包
-  在前面的例子中，在函数值或者代码块中使用的变量和值都是已经绑定的。你明确地知
+  接下来我们深入研究一下函数值的作用域。*/
+  println("----------6.9 闭包--------------")
+  /*在前面的例子中，在函数值或者代码块中使用的变量和值都是已经绑定的。你明确地知
   道它们所绑定的（实体），即本地变量或者参数。除此之外，你还可以创建带有未绑定变量的
   代码块。这样的话，你就必须在调用函数之前，为这些变量做绑定。但它们也可以绑定到或
   者捕获作用域和参数列表之外的变量。这也是这样的代码块被称之为闭包（closure）的原因。
   我们来看一下本章中见过的 totalResultOverRange()方法的一个变体。在本例中，
-  方法 loopThrough()会遍历从 1 到一个给定的数 number 之间的元素。
-  FunctionValuesAndClosures/Closure.scala
+  方法 loopThrough()会遍历从 1 到一个给定的数 number 之间的元素。*/
   def loopThrough(number: Int)(closure: Int => Unit): Unit = {
-  for (i <- 1 to number) { closure(i) }
+    for (i <- 1 to number) { closure(i) }
   }
-  loopThrough()方法的第二个参数是一个代码块，对于从 1 到它的第一个参数间的每
-  一个元素，它都会调用这个代码块。让我们来定义一个代码块，并传递给这个方法。
-  FunctionValuesAndClosures/Closure.scala
+  /*loopThrough()方法的第二个参数是一个代码块，对于从 1 到它的第一个参数间的每
+  一个元素，它都会调用这个代码块。让我们来定义一个代码块，并传递给这个方法。*/
   var result = 0
   val addIt = { value: Int => result += value }
-  ① 偏函数和部分应用函数并不是一个概念，这里提及，是为了提醒读者二者的区别。 —译者注
-  异步社区会员 雄鹰1(13027310973) 专享 尊重版权
-  6.10 Execute Around Method 模式·103
+  /*① 偏函数和部分应用函数并不是一个概念，这里提及，是为了提醒读者二者的区别。 —译者注
   在上面的代码中，我们定义了一个代码块，并把它赋值给名为 addIt 的变量。在这个代
   码块中，变量 value 绑定到了参数上，但变量 result 在代码块或者参数列表中并没有定
   义，它实际上绑定到了代码块之外的变量 result。代码块中的变量延伸并绑定到了外部的
-  变量。下面演示了如何在 loopThrough()方法的调用中使用这个代码块。
-  FunctionValuesAndClosures/Closure.scala
+  变量。下面演示了如何在 loopThrough()方法的调用中使用这个代码块。*/
   loopThrough(10) { elem => addIt(elem) }
   println(s"Total of values from 1 to 10 is $result")
   result = 0
   loopThrough(5) { addIt }
   println(s"Total of values from 1 to 5 is $result")
-  当我们把闭包传递给 loopThrough()方法时，参数 value 绑定到了 loopThrough()传递
+  /*当我们把闭包传递给 loopThrough()方法时，参数 value 绑定到了 loopThrough()传递
   过来的参数上，与此同时，result 绑定到了 loopThrough()的调用者所在的上下文中的变量。
   这种绑定并不会复制相应变量的当前值，实际上会绑定到变量本身。如果我们把 result 的
   值重置为 0，那么闭包也会受到这种改变的影响。并且，在闭包中给 result 赋值时，我们也能
-  在主代码中看到相应的值。下面是另外一个例子，其中的闭包绑定到了另外一个变量 product。
-  FunctionValuesAndClosures/Closure.scala
+  在主代码中看到相应的值。下面是另外一个例子，其中的闭包绑定到了另外一个变量 product。*/
   var product = 1
   loopThrough(5) { product *= _ }
   println(s"Product of values from 1 to 5 is $product")
-  在这个例子中，_指代 loopThrough()方法传递进来的参数，product 绑定到了
+  /*在这个例子中，_指代 loopThrough()方法传递进来的参数，product 绑定到了
   loopThrough() 方 法 的 调 用 者 所 在 的 上 下 文 中 名 为 product 的 变 量 上 。 下 面 是 对
   loopThrough()进行 3 次调用的输出结果：
   Total of values from 1 to 10 is 55
@@ -446,40 +446,43 @@ object 函数值和闭包_6 extends App{
   在本章中，我们已经取得很大进展了，学习了函数值以及如何使用它们。现在让我们运
   用一种设计模式在实战中使用函数值。
    */
-  /*
-  6.10 Execute Around Method 模式
-  Java 程序员对同步代码块（synchronized block）比较熟悉。当我们进入一个同步代
+  println("---------6.10 Execute Around Method 模式-------")
+  /*Java 程序员对同步代码块（synchronized block）比较熟悉。当我们进入一个同步代
   码块时，会在指定的对象上获得一个监视器（monitor），即锁（lock）。在我们离开这个代码
   块时，监视器会自动释放。即使代码块中抛出了一个没有被处理的异常，释放操作也还是会
   发生。这种确定性的行为不仅仅在这个特定的例子中，在别的很多场景中也非常有用。
   感谢函数值，你可以在 Scala 中非常简单地实现这种结构。我们来看一个例子。
-  异步社区会员 雄鹰1(13027310973) 专享 尊重版权
-  104·第 6 章 函数值和闭包
   我们有一个名为 Resource 的类，它需要自动启动某个事务，并在使用完对象之后立刻
   确定性地结束该事务。我们可以依赖构造器来正确地启动事务。具有挑战性的是结束部分。而
   这正好就是 Execute Around Method 模式（详见 Kent Beck 的 Smalltalk Best Practice Patterns
   [Bec96]）。我们想要在一个对象上的任意操作前后执行一对操作。
   在 Scala 中，我们可以用函数值实现这种模式。下面这段代码是 Resource 类和它的伴
-  生对象。关于伴生对象的细节，参见 4.6.2 节。
-  FunctionValuesAndClosures/Resource.scala
+  生对象。关于伴生对象的细节，参见 4.6.2 节。*/
   class Resource private () {
-  println("Starting transaction...")
-  private def cleanUp(): Unit = { println("Ending transaction...") }
-  def op1(): Unit = println("Operation 1")
-  def op2(): Unit = println("Operation 2")
-  def op3(): Unit = println("Operation 3")
+    println("Starting transaction...")
+    private def cleanUp(): Unit = { println("Ending transaction...") }
+    def op1(): Unit = println("Operation 1")
+    def op2(): Unit = println("Operation 2")
+    def op3(): Unit = println("Operation 3")
   }
   object Resource {
-  def use(codeBlock: Resource => Unit): Unit = {
-  val resource = new Resource
-  try {
-  codeBlock(resource)
-  } finally {
-  resource.cleanUp()
+    def use(codeBlock: Resource => Unit): Unit = {
+    val resource = new Resource
+    try {
+      codeBlock(resource)
+    } finally {
+    resource.cleanUp()
+    }
+    }
   }
+
+  Resource.use{
+    codeBlock:Resource=>{
+      codeBlock.op1()
+      codeBlock.op2()
+      codeBlock.op3()}
   }
-  }
-  我们把 Resource 类的构造器标记为 private。因此，我们不能在这个类和它的伴生
+  /*我们把 Resource 类的构造器标记为 private。因此，我们不能在这个类和它的伴生
   对象之外创建它的实例。这种设计可以强制我们以某种方式使用对象，以保证自动的、确定
   性的行为。cleanUp()方法也声明为 private。其中的 println 语句只用来作为真实事
   务操作的占位符。事务在构造器被调用的时候开始，在 cleanUp()被隐式调用的时候结束。
@@ -489,11 +492,8 @@ object 函数值和闭包_6 extends App{
   了 给 定 的 函 数 值 。 在 finally 代 码 块 中 ， 我 们 调 用 了 Resource 的 私 有 实 例 方 法
   cleanUp()。相当简单，对吧？为了提供对一些必要操作的确定性调用，这样做就可以了。
   现在，我们来看一下如何使用 Resource 类。下面是一些示例代码。
-  FunctionValuesAndClosures/Resource.scala
   Resource.use { resource =>
   resource.op1()
-  异步社区会员 雄鹰1(13027310973) 专享 尊重版权
-  6.10 Execute Around Method 模式·105
   resource.op2()
   resource.op3()
   resource.op1()
