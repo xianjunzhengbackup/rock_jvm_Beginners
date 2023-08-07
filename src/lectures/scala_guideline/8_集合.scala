@@ -263,8 +263,8 @@ println(s"Total length of feed urls: $total2")
 Total length of feed urls: 51
 程序员们要么喜欢这样的简洁性，比如我，要么讨厌它；我不觉得有“骑墙派”。
 现在我们可以使用 Scala 的多项约定，让代码甚至可以像下面这样更加简洁：*/
-val total3 = (0 /: feeds) { _ + _.length }
-println(s"Total length of feed urls: $total3")
+//val total3 = (0 /: feeds) { _ + _.length }
+//println(s"Total length of feed urls: $total3")
 /*下面是输出结果：
 Total length of feed urls: 51
 在本节中，我们看到了 List 的一些有趣方法。List 中还有其他一些方法，提供了额
@@ -289,21 +289,19 @@ println("-----------8.5 方法名约定-----------")
 母作为操作符的名称，除非使用下划线对该操作符增加前缀。因此，一个名为 jumpOver:()
 的方法是被拒绝的，但是 jumpOver_:()则会被接受。
 在下面这个例子中，^()方法是一个定义在 Cow 类上的方法，而^:()方法是独立定义在
-Moon 类上的一个方法。
-UsingCollections/Colon.scala
+Moon 类上的一个方法。*/
 class Cow {
-def ^(moon: Moon): Unit = println("Cow jumped over the moon")
+  def ^(moon: Moon): Unit = println("Cow jumped over the moon")
 }
 class Moon {
-def ^:(cow: Cow): Unit = println("This cow jumped over the moon too")
+  def ^:(cow: Cow): Unit = println("This cow jumped over the moon too")
 }
-下面是使用这两个方法的一个示例。
-UsingCollections/Colon.scala
+//下面是使用这两个方法的一个示例。
 val cow = new Cow
 val moon = new Moon
 cow ^ moon
 cow ^: moon
-对这两个方法的调用看起来几乎是完全一样的，cow 都在操作符的左边，而 moon 都在
+/*对这两个方法的调用看起来几乎是完全一样的，cow 都在操作符的左边，而 moon 都在
 操作符的右边。但是，第一个调用发生在 cow 上，而第二个调用发生在 moon 上，这一区别
 相当微妙。对于 Scala 新人来说，这可能是相当令人沮丧的；但是，在 List 的操作中，这
 种约定相当常见，所以我们最好还是习惯它。上述代码的输出结果如下：
@@ -315,30 +313,27 @@ moon.^:(cow)
 些都是一元操作符，分别是+、-、!和～。其中一元+操作符被映射为对 unary_+()方法的
 调用，而一元-操作符被映射为对 unary_-()方法的调用，以此类推。
 下面是一个在 Sample 类上定义一元操作符的例子。
-① 原作者的意思是将 a.fun(b)这种调用通过添加冒号的方式变成 a.fun:(b)，也就是 b fun: a。——译者注
-异步社区会员 雄鹰1(13027310973) 专享 尊重版权
-126·第 8 章 集合
-UsingCollections/Unary.scala
+① 原作者的意思是将 a.fun(b)这种调用通过添加冒号的方式变成 a.fun:(b)，也就是 b fun: a。——译者注*/
 class Sample {
-def unary_+(): Unit = println("Called unary +")
-def unary_-(): Unit = println("called unary -")
-def unary_!(): Unit = println("called unary !")
-def unary_~(): Unit = println("called unary ~")
+  def unary_+(): Unit = println("Called unary +")
+  def unary_-(): Unit = println("called unary -")
+  def unary_!(): Unit = println("called unary !")
+  def unary_~(): Unit = println("called unary ~")
 }
 val sample = new Sample
 +sample
 -sample
 !sample
 ~sample
-上述代码的输出结果如下：
+/*上述代码的输出结果如下：
 Called unary +
 called unary -
 called unary !
 called unary ~
 在熟悉了 Scala 之后，你便会长出一只 Scala 之眼—很快，处理这些符号和约定将会变
-成你的第二天性。
-8.6 for 表达式
-foreach()方法提供了集合上的内部迭代器—你不必控制循环，只需要提供在每次迭
+成你的第二天性。*/
+println("-----------8.6 for 表达式--------")
+/*foreach()方法提供了集合上的内部迭代器—你不必控制循环，只需要提供在每次迭
 代上下文中执行的代码片段即可。但是，如果希望同时控制循环或者处理多个集合，那么你
 便可以使用外部迭代器，即 for 表达式。我们来看一个简单的循环。
 UsingCollections/PowerOfFor.scala
