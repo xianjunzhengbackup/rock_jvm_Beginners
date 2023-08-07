@@ -335,45 +335,38 @@ called unary ~
 println("-----------8.6 for 表达式--------")
 /*foreach()方法提供了集合上的内部迭代器—你不必控制循环，只需要提供在每次迭
 代上下文中执行的代码片段即可。但是，如果希望同时控制循环或者处理多个集合，那么你
-便可以使用外部迭代器，即 for 表达式。我们来看一个简单的循环。
-UsingCollections/PowerOfFor.scala
+便可以使用外部迭代器，即 for 表达式。我们来看一个简单的循环。*/
 for (_ <- 1 to 3) { print("ho ") }
-这段代码打印出了“ho ho ho”。它是下面表达式的一般语法的简洁形式：
-for([pattern <- generator; definition*]+; filter*)
-[yield] expression
-for 表达式接受一个或者多个生成器作为参数，并带有 0 个或者多个定义以及 0 个或者
+//这段代码打印出了“ho ho ho”。它是下面表达式的一般语法的简洁形式：
+//for([pattern <- generator; definition*]+; filter*)
+//[yield] expression
+/*for 表达式接受一个或者多个生成器作为参数，并带有 0 个或者多个定义以及 0 个或者
 多个过滤器。这些都是由分号分隔的。yield 关键字是可选的，如果存在，则告诉表达式返
 回一个值列表而不是一个 Unit。虽然有大量的细节，不过不必担心，因为我们将会用例子
 来说明，所以你很快就会适应它了。
 让我们先从 yield 关键字开始。假设我们想要获取一个区间内的值，并将每个值都乘以
-2。下面是这样做的一个代码示例。
-异步社区会员 雄鹰1(13027310973) 专享 尊重版权
-8.6 for 表达式·127
-UsingCollections/PowerOfFor.scala
-val result = for (i <- 1 to 10)
-yield i * 2
-上面的代码返回了一个值的集合，其中每个值分别是给定区间 1 到 10 中的每个值的两倍大小。
+2。下面是这样做的一个代码示例。*/
+val result = for (i <- 1 to 10) yield i * 2
+println(result)
+/*上面的代码返回了一个值的集合，其中每个值分别是给定区间 1 到 10 中的每个值的两倍大小。
 我们还可以使用 map()方法来完成前面的逻辑，像下面这样。
-UsingCollections/PowerOfFor.scala
 val result2 = (1 to 10).map(_ * 2)
 在幕后，Scala 将根据表达式的复杂程度，把 for 表达式翻译为组合使用了类似 map()
 和 withFilter()这样的方法的表达式。
-现在，假设我们只想将区间内的偶数进行加倍，那么我们可以使用过滤器。
-UsingCollections/PowerOfFor.scala
-val doubleEven = for (i <- 1 to 10; if i % 2 == 0)
-yield i * 2
-前面的 for 表达式读作“返回一个 i * 2 的集合，其中 i 是一个给定区间的成员，且
+现在，假设我们只想将区间内的偶数进行加倍，那么我们可以使用过滤器。*/
+val doubleEven = for (i <- 1 to 10; if i % 2 == 0) yield i * 2
+println(doubleEven)
+/*前面的 for 表达式读作“返回一个 i * 2 的集合，其中 i 是一个给定区间的成员，且
 i 是偶数”。因此，上面的表达式实际上就像是对一个值的集合进行 SQL 查询—这在函数
 式编程中称为列表推导（list comprehension）。
 如果觉得上述代码中的分号碍眼，也可以将它们替换成换行符，然后使用大括号，而不
 是括号，就像下面这样：
 for {
-i <- 1 to 10
-if i % 2 == 0
+  i <- 1 to 10
+  if i % 2 == 0
 } yield i * 2
 可以将定义和生成器放在一起。Scala 在每次迭代的过程中都会定义一个新的 val 值。
-在下面这个例子中，我们循环遍历一个 Person 的集合，并打印出其姓氏。
-UsingCollections/Friends.scala
+在下面这个例子中，我们循环遍历一个 Person 的集合，并打印出其姓氏。*/
 class Person(val firstName: String, val lastName: String)
 object Person {
 def apply(firstName: String, lastName: String): Person =
@@ -383,16 +376,13 @@ val friends = List(Person("Brian", "Sletten"), Person("Neal", "Ford"),
 Person("Scott", "Davis"), Person("Stuart", "Halloway"))
 val lastNames =
 for (friend <- friends; lastName = friend.lastName) yield lastName
-异步社区会员 雄鹰1(13027310973) 专享 尊重版权
-128·第 8 章 集合
 println(lastNames.mkString(", "))
-这段代码的输出如下：
+/*这段代码的输出如下：
 Sletten, Ford, Davis, Halloway
 上面的代码也是 Scala 语法糖的一个例子，我们在新建一个 Person 的列表时实际上在
 幕后调用的是 apply()方法—这样的代码简洁且易读。
 如果在 for 表达式中提供了多个生成器，那么每个生成器都将形成一个内部循环。最右
 边的生成器控制最里面的循环。下面是使用了两个生成器的例子。
-UsingCollections/MultipleLoop.scala
 for (i <- 1 to 3; j <- 4 to 6) {
 print(s"[$i,$j] ")
 }
