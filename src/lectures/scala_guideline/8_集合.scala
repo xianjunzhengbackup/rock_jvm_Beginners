@@ -24,6 +24,7 @@ object 集合_8 extends App{
  val colors2 = colors1 + "Black" 
  println(s"colors2: $colors2") 
  println(s"colors1: $colors1")
+ println(colors1 + "Red")
    /*
     我们从一个具有 3 种颜色的 Set 开始。当添加了"Black"时，我们并没有修改原始的集
    * 合。相反，我们得到了一个具有 4 个元素的新集合，正如我们在下面所看到的：
@@ -167,82 +168,81 @@ println(filterNameStartWithDAndPragprogInFeed.size)
    println(s"Number of forums: ${mutableFeeds.size}") 
    我们将得到如下输出结果：
    Number of forums: 2 
-   既然已经学习了 Set 和 Map，那么我们就不能再忽略最常见的集合—List。
-   8.4 不可变列表 
-   通过使用 head 方法，Scala 使访问一个列表的第一个元素更加简单快速。使用 tail 方
+   既然已经学习了 Set 和 Map，那么我们就不能再忽略最常见的集合—List。*/
+   println("-----------8.4 不可变列表-------------") 
+  /* 通过使用 head 方法，Scala 使访问一个列表的第一个元素更加简单快速。使用 tail 方
    法，可以访问除第一个元素之外的所有元素。访问列表中的最后一个元素需要对列表进行遍
    历，因此相比访问列表的头部和尾部①，该操作更加昂贵。所以，列表上的大多数操作都是
    围绕着对头部和尾部的操作构造的。
    让我们继续使用上面的 feed 例子来学习 List。我们可以使用 List 来维护一个有序的
-   feed 集合。
-   val feeds = List("blog.toolshed.com", "pragdave.me", "blog.agiledeveloper.com") 
-   这创建了一个 List[String]的实例。我们可以使用从 0 到 list.length - 1 的索
+   feed 集合。*/
+   val feedss = List("blog.toolshed.com", "pragdave.me", "blog.agiledeveloper.com") 
+  /* 这创建了一个 List[String]的实例。我们可以使用从 0 到 list.length - 1 的索
    引来访问 List 中的元素。当调用 feeds(1)方法时，我们使用的是 List 的 apply()方法。
    也就是说，feeds(0)是 feeds.apply(0)的一个简单形式。要访问第一个元素，我们可以
-   使用 feeds(0)或者 head()方法。
-   println(s"First feed: ${feeds.head}") 
-   println(s"Second feed: ${feeds(1)}") 
-   这段代码的输出结果如下：
+   使用 feeds(0)或者 head()方法。*/
+   println(s"First feed: ${feedss.head}") 
+   println(s"Second feed: ${feedss(1)}") 
+  /* 这段代码的输出结果如下：
    First feed: blog.toolshed.com
 Second feed: pragdave.me
 如果我们想要前插一个元素，即将一个元素放在当前 List 的前面，我们可以使用特殊
 的::()方法。a :: list 读作“将 a 前插到 list”。虽然 list 跟在这个操作符之后，但
-它是 list 上的一个方法。8.5 节会详细介绍其工作原理。
-val prefixedList = "forums.pragprog.com/forums/87" :: feeds
+它是 list 上的一个方法。8.5 节会详细介绍其工作原理。*/
+val prefixedList = "forums.pragprog.com/forums/87" :: feedss
 println(s"First Feed In Prefixed: ${prefixedList.head}")
-上述代码的输出结果如下：
+/*上述代码的输出结果如下：
 First Feed In Prefixed: forums.pragprog.com/forums/87
 假设我们想要追加一个列表到另外一个列表，例如，将 listA 追加到另外一个列表
 list。那么我们可以使用:::()方法将 list 实际上前插到 listA。因此，代码应该是
 list ::: listA，并读作“将 list 前插到 listA”。因为 List 是不可变的，所以我们
 不会影响前面的任何一个列表。我们只是使用这两个列表中的元素创建了一个新列表。 ① 下
-面是一个追加的例子：
+面是一个追加的例子：*/
 val feedsWithForums =
-feeds ::: List(
+feedss ::: List(
 "forums.pragprog.com/forums/87",
 "forums.pragprog.com/forums/246")
 println(s"First feed in feeds with forum: ${feedsWithForums.head}")
 println(s"Last feed in feeds with forum: ${feedsWithForums.last}")
-下面是输出结果：
+/*下面是输出结果：
 First feed in feeds with forum: blog.toolshed.com
 Last feed in feeds with forum: forums.pragprog.com/forums/246
 同样地，:::()方法是在操作符后面的列表上调用的。
 要将一个元素追加到列表中，可以使用相同的:::()方法。将想要追加的元素添加到一
-个列表中，然后将原始列表拼接到它的前面：
-val appendedList = feeds ::: List("agilelearner.com")
+个列表中，然后将原始列表拼接到它的前面：*/
+val appendedList = feedss ::: List("agilelearner.com")
 println(s"Last Feed In Appended: ${appendedList.last}")
-我们应该能看到下面这样的输出：
+/*我们应该能看到下面这样的输出：
 Last Feed In Appended: agilelearner.com
 需要注意的是，将元素或者列表追加到另外一个列表中，实际上调用的是后者的前缀方
 法。这样做的原因是，与遍历到列表的最后一个元素相比，访问列表的头部元素要快得多。
 事半功倍。
 ① 实际上，这个新列表将会共享整个 listA。——译者注
-异步社区会员 雄鹰1(13027310973) 专享 尊重版权
-8.4 不可变列表·123
+
 如果想要只选择满足某些条件的 feed，应该使用 filter()方法。如果我们想要检查是
 否所有的 feed 都满足某个特定的条件，则可以使用 forall()方法。另外，如果我们想要知
-道是否有任意 feed 满足某一条件，那么 exists()方法可以帮到我们。
-println(s"Feeds with blog: ${feeds.filter(_ contains "blog").mkString(", ")}")
-println(s"All feeds have com: ${feeds.forall(_ contains "com")}")
-println(s"All feeds have dave: ${feeds.forall(_ contains "dave")}")
-println(s"Any feed has dave: ${feeds.exists(_ contains "dave")}")
-println(s"Any feed has bill: ${feeds.exists(_ contains "bill")}")
-我们将得到下面这样的结果：
+道是否有任意 feed 满足某一条件，那么 exists()方法可以帮到我们。*/
+println(s"Feeds with blog: ${feedss.filter(_ contains "blog").mkString(", ")}")
+println(s"All feeds have com: ${feedss.forall(_ contains "com")}")
+println(s"All feeds have dave: ${feedss.forall(_ contains "dave")}")
+println(s"Any feed has dave: ${feedss.exists(_ contains "dave")}")
+println(s"Any feed has bill: ${feedss.exists(_ contains "bill")}")
+/*我们将得到下面这样的结果：
 Feeds with blog: blog.toolshed.com, blog.agiledeveloper.com
 All feeds have com: false
 All feeds have dave: false
 Any feed has dave: true
 Any feed has bill: false
 如果想要知道我们需要显示的每个 feed 名称的字符数，那么我们可以使用 map()方法来
-处理每个元素，并获得一个结果列表，如下所示：
-println(s"Feed url lengths: ${feeds.map(_.length).mkString(", ")}")
-下面是输出结果：
+处理每个元素，并获得一个结果列表，如下所示：*/
+println(s"Feed url lengths: ${feedss.map(_.length).mkString(", ")}")
+/*下面是输出结果：
 Feed url lengths: 17, 11, 23
 如果我们对所有 feed 的字符总数感兴趣，那么我们可以使用 foldLeft()方法，如下
-所示：
-val total = feeds.foldLeft(0) { (total, feed) => total + feed.length }
+所示：*/
+val total = feedss.foldLeft(0) { (total, feed) => total + feed.length }
 println(s"Total length of feed urls: $total")
-上述代码的输出结果如下：
+/*上述代码的输出结果如下：
 Total length of feed urls: 51
 需要注意的是，虽然前面的方法在执行求和操作，但是它并没有处理任何可变状态。这
 是纯函数式风格。在不断地使用方法对列表中的元素进行处理的过程中，将会累计出一个新
@@ -254,27 +254,25 @@ foldLeft()方法将从列表的左侧开始，为列表中的每个元素调用�
 供（在这个例子中是 0）。foldLeft()方法形成了一个元素链，并在该函数值中将计算得到
 的部分结果值，从左边开始，从一个元素携带到下一个元素。类似地，foldRight()方法
 也一样，但是它从右边开始。
-异步社区会员 雄鹰1(13027310973) 专享 尊重版权
-124·第 8 章 集合
 为了使前面的方法更加简洁，Scala 提供了替代方法。/:()方法等价于 foldLeft()
 方法，而\:()方法等价 于 foldRight()方法 。下面我们 使用/:()方法重写前 面的
-例子：
-val total2 = (0 /: feeds) { (total, feed) => total + feed.length }
+例子：*/
+val total2 = (0 /: feedss) { (total, feed) => total + feed.length }
 println(s"Total length of feed urls: $total2")
-上述代码的输出结果如下：
+/*上述代码的输出结果如下：
 Total length of feed urls: 51
 程序员们要么喜欢这样的简洁性，比如我，要么讨厌它；我不觉得有“骑墙派”。
-现在我们可以使用 Scala 的多项约定，让代码甚至可以像下面这样更加简洁：
+现在我们可以使用 Scala 的多项约定，让代码甚至可以像下面这样更加简洁：*/
 val total3 = (0 /: feeds) { _ + _.length }
 println(s"Total length of feed urls: $total3")
-下面是输出结果：
+/*下面是输出结果：
 Total length of feed urls: 51
 在本节中，我们看到了 List 的一些有趣方法。List 中还有其他一些方法，提供了额
 外的能力。
 这些方法名中的冒号在 Scala 中具有重大的意义，理解它是非常重要的。接下来，让我
-们一起来探讨一下吧。
-8.5 方法名约定
-本节中介绍的功能非常酷（我真的是这样认为的），但是理解起来也有一点儿难。如果你
+们一起来探讨一下吧。*/
+println("-----------8.5 方法名约定-----------")
+/*本节中介绍的功能非常酷（我真的是这样认为的），但是理解起来也有一点儿难。如果你
 在阅读下面的这几页时，身边有氧气面罩，那么在帮助你身边的程序员之前，请先带好自己
 的面罩。 ①
 在 3.9 节中，我们明白了 Scala 是如何支持操作符重载的，尽管它并没有（原生的）操作
@@ -285,9 +283,6 @@ Total length of feed urls: 51
 之眼”后），你便会发现它可以提高代码的流畅度。例如，如果要前插一个值到列表中，可以
 编写 value :: list。即使它读起来好像是“将 value 前插到 list 中”，但是，该方法
 的目标实际上是 list，而 value 作为参数，即 list.::(value)。
-① 这里是一种打趣的说法，类似的用语在坐飞机的时候，机上广播一定会说到的。——译者注
-异步社区会员 雄鹰1(13027310973) 专享 尊重版权
-8.5 方法名约定·125
 有些程序员会问，是否可以在调用过程中将冒号附加到现有的方法上。① 答案是不可以，因
 为 Scala 并没有提供用于装饰现有方法名称的设施。该约定仅用于以此特殊符号结束的方法名。
 如果方法名以冒号（:）结尾，那么调用的目标是该操作符后面的实例。Scala 不允许使用字
