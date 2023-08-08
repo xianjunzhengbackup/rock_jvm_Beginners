@@ -237,6 +237,58 @@ object 递归_11 extends App{
   Call 或者 Done 的实例。如果是 Call 的实例，那么它会发信号通知调用继续执行，迭代会
   继续执行内部函数以便做进一步的处理。如果是 Done 的实例，那么它会发信号通知迭代终
   止，并将内部函数中留存的结果返回。
+  如果要继续递归，那么使用 tailcall()函数。要终止递归，就用 done()函数。done()
+  又会创建 Done 的实例。让我们通过使用 TailRec 来重构代码，把这些知识应用到先前的
+  代码示例中。
+  ProgrammingRecursions/WordsTrampoline.scala
+  import scala.io.Source._
+  import scala.util.control.TailCalls._
+  def explore(count: Int, words: List[String]): TailRec[Int] =
+  if (words.isEmpty)
+  done(count)
+  else
+  tailcall(countPalindrome(count, words))
+  def countPalindrome(count: Int, words: List[String]): TailRec[Int] = {
+  val firstWord = words.head
+  if (firstWord.reverse == firstWord)
+  tailcall(explore(count + 1, words.tail))
+  else
+  tailcall(explore(count, words.tail))
+  }
+  def callExplore(text: String): Unit =
+  println(explore(0, text.split(" ").toList).result)
+  callExplore("dad mom and racecar")
+  try {
+  val text =
+  fromURL("https://en.wikipedia.org/wiki/Gettysburg_Address").mkString
+  callExplore(text)
+  } catch {
+  case ex: Throwable => println(ex)
+  }
+  explore()方法返回 TailRec 而不是 Int。如果列表是空的，那么它会返回在期望结果
+  上调用 done()函数的结果。调用 tailcall()方法，则继续递归。类似地，countPalindrome()
+  方法会在合适的函数值上调用 tailcall()方法继续递归。
+  这里需要谨记的关键点就是，done()和 tailcall()方法都只是简单地将它们的参数
+  包装一下，以供后续调用或者延迟执行，并立即返回结果。而实际决定是继续执行还是终止
+  发生在 result()函数的内部，我们在 explore()函数的结果上调用了 result()函数。
+  这关键的一步是在 callExplore()中完成的。
+  运行这个修改过的版本，可以看到这段代码已经不会再出现栈溢出的问题了：
+  异步社区会员 雄鹰1(13027310973) 专享 尊重版权
+  158·第 11 章 递归
+  3
+  352
+  尽管 Scala 会对尾递归的调用进行自动优化，但是它没有在编译器层面对蹦床调用做优
+  化。但如你所见，通过使用 Scala 标准库，我们就可以轻松避免（由蹦床调用导致的）栈溢
+  出的问题。
+  11.4 小结
+  使用递归可以对很多问题给出美观、直观以及富有表现力的解决方案。然而，程序员往
+  往会避免递归或者不愿意使用递归，因为在输入值比较大的时候容易栈溢出。Scala 编译器内
+  置了递归优化，可以将尾部递归直接转化成迭代，从而避免栈溢出。这种优化让我们在能够
+  使用递归简化代码时更加自由，无须担忧栈溢出。在 Scala 标准库的支持下，蹦床递归的处
+  理也变得轻松很多。使用这两种解决方案，不但解决关键算法和关键问题的代码量大大减少，
+  而且额外的顾虑也变得很少。
+  既然谈到了关键算法和关键问题，那么我们接下来看一下 Scala 对并发的支持如何让代
+  码执行更快且响应更及时。
   */
   
    
