@@ -193,6 +193,7 @@ object 递归_11 extends App{
           尽管 Scala 编译器并不支持蹦床调用的优化，但是我们可以用 TailRec 类来避免栈溢出
           的问题。
           我们先来看一个在比较大的输入值下会栈溢出的蹦床调用例子。*/
+         /*
           import scala.io.Source._ 
           def explore(count: Int, words: List[String]): Int = 
              if (words.isEmpty) 
@@ -214,7 +215,7 @@ object 递归_11 extends App{
                 callExplore(text) 
               } catch { 
                        case ex: Throwable => println(ex) 
-                    } 
+                    }*/ 
   /*explore()函数将部分结果 count 和单词列表作为参数。如果列表是空的，那么直接
   返回 count 的值；否则，会调用 countPalindrome()方法。countPalindrome()方法
   会依次检查列表中的第一个单词是否回文。如果是，则调用 explore()方法，其参数 count
@@ -239,33 +240,31 @@ object 递归_11 extends App{
   止，并将内部函数中留存的结果返回。
   如果要继续递归，那么使用 tailcall()函数。要终止递归，就用 done()函数。done()
   又会创建 Done 的实例。让我们通过使用 TailRec 来重构代码，把这些知识应用到先前的
-  代码示例中。
-  ProgrammingRecursions/WordsTrampoline.scala
+  代码示例中。*/
   import scala.io.Source._
   import scala.util.control.TailCalls._
   def explore(count: Int, words: List[String]): TailRec[Int] =
-  if (words.isEmpty)
-  done(count)
-  else
-  tailcall(countPalindrome(count, words))
+    if (words.isEmpty)
+      done(count)
+    else
+      tailcall(countPalindrome(count, words))
   def countPalindrome(count: Int, words: List[String]): TailRec[Int] = {
-  val firstWord = words.head
-  if (firstWord.reverse == firstWord)
-  tailcall(explore(count + 1, words.tail))
-  else
-  tailcall(explore(count, words.tail))
+    val firstWord = words.head
+    if (firstWord.reverse == firstWord)
+      tailcall(explore(count + 1, words.tail))
+    else
+      tailcall(explore(count, words.tail))
   }
   def callExplore(text: String): Unit =
-  println(explore(0, text.split(" ").toList).result)
+    println(explore(0, text.split(" ").toList).result)
   callExplore("dad mom and racecar")
   try {
-  val text =
-  fromURL("https://en.wikipedia.org/wiki/Gettysburg_Address").mkString
-  callExplore(text)
+    val text =fromURL("https://en.wikipedia.org/wiki/Gettysburg_Address").mkString
+    callExplore(text)
   } catch {
   case ex: Throwable => println(ex)
   }
-  explore()方法返回 TailRec 而不是 Int。如果列表是空的，那么它会返回在期望结果
+  /*explore()方法返回 TailRec 而不是 Int。如果列表是空的，那么它会返回在期望结果
   上调用 done()函数的结果。调用 tailcall()方法，则继续递归。类似地，countPalindrome()
   方法会在合适的函数值上调用 tailcall()方法继续递归。
   这里需要谨记的关键点就是，done()和 tailcall()方法都只是简单地将它们的参数

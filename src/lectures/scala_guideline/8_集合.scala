@@ -394,49 +394,50 @@ print(s"[$i,$j] ")
 
 object Scala_Collections extends App{
   println("This is from Hands on Scala Programming")
-  /*
-  4.1 Operations
-  Scala collections provide many common operations for constructing them, querying them, or transforming
+  
+  println("--------4.1 Operations----------------")
+  /*Scala collections provide many common operations for constructing them, querying them, or transforming
   them. These operations are present on the Array s we saw in Chapter 3: Basic Scala, but they also apply to
   all the collections we will cover in this chapter: Vectors (4.2.1), Sets (4.2.3), Maps (4.2.4), etc.
-  4.1.1 Builders
-  @ val b = Array.newBuilder[Int]
-  b: mutable.ArrayBuilder[Int] = ArrayBuilder.ofInt
-  @ b += 1
-  @ b += 2
-  @ b.result()
-  res3: Array[Int] = Array(1, 2)
-  </> 4.2.scala
+  4.1.1 Builders*/
+  val b = Array.newBuilder[Int]
+  //b: mutable.ArrayBuilder[Int] = ArrayBuilder.ofInt
+  b += 1
+  b += 2
+  println(b.result())
+  //res3: Array[Int] = Array(1, 2)
+  //For some reason, above code can only see result in sbt console.
+  /*4.2.scala
   Builders let you efficiently construct a collection of unknown length, "freezing" it into the collection you
-  want at the end. This is most useful for constructing Array s or immutable collections where you cannot add
+  want at the end. This is most useful for constructing Arrays or immutable collections where you cannot add
   or remove elements once the collection has been constructed.
-  4.1.2 Factory Methods
-  @ Array.fill(5)("hello") // Array with "hello" repeated 5 times
-  res4: Array[String] = Array("hello", "hello", "hello", "hello", "hello")
-  @ Array.tabulate(5)(n => s"hello $n") // Array with 5 items, each computed from its index
-  res5: Array[String] = Array("hello 0", "hello 1", "hello 2", "hello 3", "hello 4")
-  @ Array(1, 2, 3) ++ Array(4, 5, 6) // Concatenating two Arrays into a larger one
-  res6: Array[Int] = Array(1, 2, 3, 4, 5, 6)
-  </> 4.3.scala
+  4.1.2 Factory Methods*/
+  Array.fill(5)("hello").foreach(println) // Array with "hello" repeated 5 times
+  //res4: Array[String] = Array("hello", "hello", "hello", "hello", "hello")
+  Array.tabulate(5)(n => s"hello $n").foreach(println) // Array with 5 items, each computed from its index
+  //res5: Array[String] = Array("hello 0", "hello 1", "hello 2", "hello 3", "hello 4")
+  println((Array(1, 2, 3) ++ Array(4, 5, 6)).mkString(",")) // Concatenating two Arrays into a larger one
+  //res6: Array[Int] = Array(1, 2, 3, 4, 5, 6)
+  /*4.3.scala
   Factory methods provide another way to instantiate collections: with every element the same, with each
   element constructed depending on the index, or from multiple smaller collections. This can be more
   convenient than using Builders (4.1.1) in many common use cases.
   See example 4.1 - BuildersFactories
-  Chapter 4 Scala Collections
-  604.1.3 Transforms
-  @ Array(1, 2, 3, 4, 5).map(i => i * 2) // Multiply every element by 2
-  res7: Array[Int] = Array(2, 4, 6, 8, 10)
-  @ Array(1, 2, 3, 4, 5).filter(i => i % 2 == 1) // Keep only elements not divisible by 2
-  res8: Array[Int] = Array(1, 3, 5)
-  @ Array(1, 2, 3, 4, 5).take(2) // Keep first two elements
-  res9: Array[Int] = Array(1, 2)
-  @ Array(1, 2, 3, 4, 5).drop(2) // Discard first two elements
-  res10: Array[Int] = Array(3, 4, 5)
-  @ Array(1, 2, 3, 4, 5).slice(1, 4) // Keep elements from index 1-4
-  res11: Array[Int] = Array(2, 3, 4)
-  @ Array(1, 2, 3, 4, 5, 4, 3, 2, 1, 2, 3, 4, 5, 6, 7, 8).distinct // Removes all duplicates
-  res12: Array[Int] = Array(1, 2, 3, 4, 5, 6, 7, 8)
-  </> 4.4.scala
+  04.1.3 Transforms*/
+ Array(1, 2, 3, 4, 5).map(i => i * 2).foreach(x=>print(s"$x,")) // Multiply every element by 2
+  //res7: Array[Int] = Array(2, 4, 6, 8, 10)
+  println()
+  Array(1, 2, 3, 4, 5).filter(i => i % 2 == 1).foreach(x=>print(s"$x,"));println() // Keep only elements not divisible by 2
+    //res8: Array[Int] = Array(1, 3, 5)
+    Array(1, 2, 3, 4, 5).take(2).foreach(x=>print(s"$x,"));println() // Keep first two elements
+  //res9: Array[Int] = Array(1, 2)
+  Array(1, 2, 3, 4, 5).drop(2).foreach(x=>print(s"$x,"));println() // Discard first two elements
+  //res10: Array[Int] = Array(3, 4, 5)
+  Array(1, 2, 3, 4, 5).slice(1, 4).foreach(x=>print(s"$x,"));println() // Keep elements from index 1-4
+  //res11: Array[Int] = Array(2, 3, 4)
+  Array(1, 2, 3, 4, 5, 4, 3, 2, 1, 2, 3, 4, 5, 6, 7, 8).distinct.foreach(x=>print(s"$x,"));println() // Removes all duplicates
+  //res12: Array[Int] = Array(1, 2, 3, 4, 5, 6, 7, 8)
+  /*4.4.scala
   Transforms take an existing collection and create a new collection modified in some way. Note that these
   transformations create copies of the collection, and leave the original unchanged. That means if you are still
   using the original array, its contents will not be modified by the transform:
@@ -453,27 +454,26 @@ object Scala_Collections extends App{
   should not cause issues. If a piece of code does turn out to be a bottleneck that is slowing down your
   program, you can always convert your .map / .filter /etc. transformation code into mutating operations
   over raw Array s or In-Place Operations (4.3.4) over Mutable Collections (4.3) to optimize for performance.
-  See example 4.2 - Transforms
-  Chapter 4 Scala Collections
-  614.1.4 Queries
-  @ Array(1, 2, 3, 4, 5, 6, 7).find(i => i % 2 == 0 && i > 4)
-  res17: Option[Int] = Some(6)
-  @ Array(1, 2, 3, 4, 5, 6, 7).find(i => i % 2 == 0 && i > 10)
-  res18: Option[Int] = None
-  @ Array(1, 2, 3, 4, 5, 6, 7).exists(x => x > 1) // are any elements greater than 1?
-  res19: Boolean = true
-  @ Array(1, 2, 3, 4, 5, 6, 7).exists(_ < 0) // same as a.exists(x => x < 0)
-  res20: Boolean = false
-  </> 4.6.scala
+  See example 4.2 - Transforms*/
+  println("----------4.1.4 Queries--------------")
+  Array(1, 2, 3, 4, 5, 6, 7).find(i => i % 2 == 0 && i > 4).foreach(x=>print(s"$x,"));println()
+  //res17: Option[Int] = Some(6)
+  Array(1, 2, 3, 4, 5, 6, 7).find(i => i % 2 == 0 && i > 10).foreach(x=>print(s"$x,"));println()
+  //res18: Option[Int] = None
+  println(Array(1, 2, 3, 4, 5, 6, 7).exists(x => x > 1)) // are any elements greater than 1?
+  //res19: Boolean = true
+  println(Array(1, 2, 3, 4, 5, 6, 7).exists(_ < 0))// same as a.exists(x => x < 0)
+  //res20: Boolean = false
+  /*4.6.scala
   Queries let you search for elements without your collection, returning either a Boolean indicating if a
   matching element exists, or an Option containing the element that was found. This can make it convenient
   to find things inside your collections without the verbosity of writing for-loops to inspect the elements one
-  by one.
-  4.1.5 Aggregations
-  4.1.5.1 mkString
+  by one.*/
+  println("-----------4.1.5 Aggregations------------")
+  /*4.1.5.1 mkString
   Stringifies the elements in a collection and combines them into one long string, with the given separator.
   Optionally can take a start and end delimiter:
-  @ Array(1, 2, 3, 4, 5, 6, 7).mkString(",")
+  Array(1, 2, 3, 4, 5, 6, 7).mkString(",")
   res21: String = "1,2,3,4,5,6,7"
   @ Array(1, 2, 3, 4, 5, 6, 7).mkString("[", ",", "]")
   res22: String = "[1,2,3,4,5,6,7]"
@@ -487,9 +487,8 @@ object Scala_Collections extends App{
   res24: Int = 5040
   @ Array(1, 2, 3, 4, 5, 6, 7).foldLeft(1)(_ * _) // same as above, shorthand syntax
   res25: Int = 5040
-  Chapter 4 Scala Collections
-  </> 4.8.scala
-  62In general, foldLeft is similar to a for -loop and accumulator var , and the above sum-of-all-elements
+  
+  In general, foldLeft is similar to a for -loop and accumulator var , and the above sum-of-all-elements
   foldLeft call can equivalently be written as:
   @ {
   var total = 0
@@ -499,16 +498,14 @@ object Scala_Collections extends App{
   total: Int = 28
   </> 4.9.scala
   4.1.5.3 groupBy
-  Groups your collection into a Map of smaller collections depending on a key:
-  @ val grouped = Array(1, 2, 3, 4, 5, 6, 7).groupBy(_ % 2)
-  grouped: Map[Int, Array[Int]] = Map(0 -> Array(2, 4, 6), 1 -> Array(1, 3, 5, 7))
-  @ grouped(0)
-  res26: Array[Int] = Array(2, 4, 6)
-  @ grouped(1)
-  res27: Array[Int] = Array(1, 3, 5, 7)
-  </> 4.10.scala
-  See example 4.3 - QueriesAggregations
-  4.1.6 Combining Operations
+  Groups your collection into a Map of smaller collections depending on a key:*/
+  val grouped = Array(1, 2, 3, 4, 5, 6, 7).groupBy(_ % 2)
+  //grouped: Map[Int, Array[Int]] = Map(0 -> Array(2, 4, 6), 1 -> Array(1, 3, 5, 7))
+  grouped(0)
+  //res26: Array[Int] = Array(2, 4, 6)
+  grouped(1)
+  //res27: Array[Int] = Array(1, 3, 5, 7)
+  /*4.1.6 Combining Operations
   It is common to chain more than one operation together to achieve what you want. For example, here is a
   function that computes the standard deviation of an array of numbers:
   @ def stdDev(a: Array[Double]): Double = {

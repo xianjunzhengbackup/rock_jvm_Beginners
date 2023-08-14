@@ -21,9 +21,6 @@ object 使用Actor编程_13 extends App{
   给定一个目录作为根目录，我们将使用程序来查找该目录下的子目录层次结构中的文件
   数量。下面是该程序的一个顺序实现。
   ① 这里有一个前提是，不要不安全地发布 Actor 的内部状态。——译者注
-  异步社区会员 雄鹰1(13027310973) 专享 尊重版权
-  13.1 一个顺序耗时问题·177
-  ProgrammingActors/CountFilesSequential.scala
   import java.io.File
   def getChildren(file: File) = {
   val children = file.listFiles()
