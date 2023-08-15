@@ -517,16 +517,14 @@ object Scala_Collections extends App{
   res29: Double = 1.4142135623730951
   @ stdDev(Array(3, 3, 3))
   res30: Double = 0.0
-  </> 4.11.scala
+  4.11.scala
   Scala collections provide a convenient helper method .sum that is equivalent to .foldLeft(0.0)(_ + _) , so
   the above code can be simplified to:
-  Chapter 4 Scala Collections
-  63@ def stdDev(a: Array[Double]): Double = {
+  def stdDev(a: Array[Double]): Double = {
   val mean = a.sum / a.length
   val squareErrors = a.map(_ - mean).map(x => x * x)
   math.sqrt(squareErrors.sum / a.length)
   }
-  </> 4.12.scala
   As another example, here is a function that uses .exists , .map and .distinct to check if an incoming grid
   of numbers is a valid Sudoku grid:
   @ def isValidSudoku(grid: Array[Array[Int]]): Boolean = {
@@ -539,7 +537,6 @@ object Scala_Collections extends App{
   square.distinct.length != square.length
   }
   }
-  </> 4.13.scala
   This implementation receives a Sudoku grid, represented as a 2-dimensional Array[Array[Int]] . For each i
   from 0 to 9 , we pick out a single row, column, and 3x3 square. It then checks that each such
   row/column/square has 9 unique numbers by calling .distinct to remove any duplicates, and then
@@ -560,70 +557,45 @@ object Scala_Collections extends App{
   res33: Boolean = true
   Chapter 4 Scala Collections
   )) // bottom right cell should be 9
-  </> 4.14.scala
+  4.14.scala
   res34: Boolean = false
-  </> 4.15.scala
-  64Chaining collection transformations in this manner will always have some overhead, but for most use cases
+  4.15.scala
+  Chaining collection transformations in this manner will always have some overhead, but for most use cases
   the overhead is worth the convenience and simplicity that these transforms give you. If collection
   transforms do become a bottleneck, you can optimize the code using Views (4.1.8), In-Place Operations
   (4.3.4), or finally by looping over the raw Array s yourself.
   See example 4.4 - Combining
   4.1.7 Converters
   You can convert among Array s and other collections like Vector (4.2.1)s and Set (4.2.3) using the .to
-  method:
-  @ Array(1, 2, 3).to(Vector)
-  res35: Vector[Int] = Vector(1, 2, 3)
-  @ Vector(1, 2, 3).to(Array)
-  res36: Array[Int] = Array(1, 2, 3)
-  @ Array(1, 1, 2, 2, 3, 4).to(Set)
-  res37: Set[Int] = Set(1, 2, 3, 4)
-  </> 4.16.scala
-  4.1.8 Views
+  method:*/
+  val v=Array(1, 2, 3).toVector
+  println(v)
+  //res35: Vector[Int] = Vector(1, 2, 3)
+  val a=Vector(1, 2, 3).toArray
+  println(a)
+  //res36: Array[Int] = Array(1, 2, 3)
+  val s=Array(1, 1, 2, 2, 3, 4).toSet
+  println(s)
+  //res37: Set[Int] = Set(1, 2, 3, 4)
+  println("-----------4.1.8 Views------------")
+  /*
   When you chain multiple transformations on a collection, we are creating many intermediate collections
   that are immediately thrown away. For example, in the following snippet:
-  @ val myArray = Array(1, 2, 3, 4, 5, 6, 7, 8, 9)
+  val myArray = Array(1, 2, 3, 4, 5, 6, 7, 8, 9)
   @ val myNewArray = myArray.map(x => x + 1).filter(x => x % 2 == 0).slice(1, 3)
   myNewArray: Array[Int] = Array(4, 6)
-  </> 4.17.scala
+  4.17.scala
   The chain of .map .filter .slice operations ends up traversing the collection three times, creating three
   new collections, but only the last collection ends up being stored in myNewArray and the others are
   discarded.
-  Chapter 4 Scala Collections
-  65myArray
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
-  map(x => x + 1)
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
-  10
-  filter(x => x % 2 == 0)
-  2
-  4
-  6
-  8
-  10
-  slice(1, 3)
-  myNewArray
-  4
-  6
   This creation and traversal of intermediate collections is wasteful. In cases where you have long chains of
   collection transformations that are becoming a performance bottleneck, you can use the .view method
-  together with .to to "fuse" the operations together:
-  @ val myNewArray = myArray.view.map(_ + 1).filter(_ % 2 == 0).slice(1, 3).to(Array)
-  myNewArray: Array[Int] = Array(4, 6)
+  together with .to to "fuse" the operations together:*/
+  val myArray = Array(1, 2, 3, 4, 5, 6, 7, 8, 9)
+  val myNewArray = myArray.view.map(_ + 1).filter(_ % 2 == 0).slice(1, 3).toArray
+  myNewArray.foreach(x=>print(s"$x,"));println()
+  myNewArray.foreach(println)
+  /*myNewArray: Array[Int] = Array(4, 6)
   </> 4.18.scala
   Using .view before the map / filter / slice transformation operations defers the actual traversal and
   creation of a new collection until later, when we call .to to convert it back into a concrete collection type:
