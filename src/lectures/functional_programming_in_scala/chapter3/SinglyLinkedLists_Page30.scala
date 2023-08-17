@@ -55,6 +55,12 @@ object List{
       case Nil => a2
       case Cons(h,t) =>Cons(h,append(t,a2))
     }
+  def init[A](l:List[A]):List[A]=
+    l match{
+      case Nil => Nil
+      case Cons(h,Nil) => Nil
+      case Cons(h,t) => Cons(h,init(t))
+    }
 }
 
 object SinglyLinkedList extends App{
@@ -73,5 +79,7 @@ object SinglyLinkedList extends App{
   //println(List.dropWhile(a,x:Int=>{x<=4}))
   println("append test")
   println(List.append(List(3,4,5,6),a))
+  println("init test")
+  println(List.init(a))
 
 }
