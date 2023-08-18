@@ -1,0 +1,144 @@
+13 What time is it?
+In this capstone, you will
+
+Create a package for your application
+Import and use the java.time package
+Code using classes, objects, and traits together with access modifiers
+Define an executable object
+Time zones can be challenging to deal with, particularly in distributed teams and collaborations. In this capstone, you’ll implement an executable application that uses sbt to print the current time in a given time zone.
+
+ 13.1 What time is it?
+The goal of this capstone is to create a small program using sbt: it should start, ask the user to enter a time zone, use the input to compute the current time in it, and display the result in the terminal in a human-readable format, such as RFC 1123 (e.g., “Fri, 27 Apr 2018 11:44:35 +0200”). Let’s keep things simple and let the script crash if the user enters an invalid time zone; you’ll learn how to handle exceptions in the next unit.
+
+13.1.1 SBT PROJECT SETUP
+First, you need to set up the sbt project. There are different ways of achieving this: you can create an sbt project using your IDE or apply the hello-world Giter8 template by typing the command sbt new scala/hello-world.g8. When using the hello-world Giter8 template do not forget to delete the Main.scala file in the src/main/scala folder. Alternatively, you can also create an empty sbt project manually as follows:
+
+1. In your project directory, create a build.sbt file containing your Scala version, the name, and your project version.
+
+Listing 13.1 An example of build.sbt file
+
+name := "what-time-is-it"
+ 
+version := "0.1"
+ 
+scalaVersion := "3.0.0" // this is your scala version
+
+2. Create a directory project with a build.properties file (see listing 13.2) with your sbt version.
+Listing 13.2 An example of project/build.properties file
+
+sbt.version = 1.5.2 // this is your sbt version
+
+3. Finally, create the folder src/main/scala; it will contain your application’s source code.
+
+You will not need to add any external dependency into your build.sbt file for this capstone. You’ll use java.time to compute the current date and time, which is already accessible as an internal module of the Scala language.
+
+Finally, let’s define a package, called org.example.time, to contain the code for your application: create a directory with relative path src/main/scala/org/example/time.
+
+13.1.2 THE BUSINESS LOGIC LAYER
+The TimePrinter class takes care of our business logic. It belongs to the org.example.time package, which defines the logic used to compute the current date and time for a given time zone. It uses three elements of the package java.time:
+
+java.time.ZoneId lists the time zones supported, and it allows you to perform operations on them.
+
+java.time.ZonedDateTime represents a date with time and a well-defined time zone.
+
+java.time.format.DateTimeFormatter converts a temporal event (e.g., date, time, date-time) to and from a string. You can either use one of the already defined formatters or create a custom one.
+
+A TimePrinter has a formatter as its parameter and a publicly accessible method now, which takes one parameter representing a time zone as a string; you do not need to expose its other functions.
+
+Listing 13.3 The TimePrinter class
+
+// file src/main/scala/org/example/time/TimePrinter.scala
+package org.example.time
+ 
+import java.time.format.DateTimeFormatter
+import java.time.{ZoneId, ZonedDateTime}
+ 
+class TimePrinter(formatter: DateTimeFormatter) {   ❶
+ 
+  def now(timezone: String): String = {
+    val dateTime = currentDateTime(timezone)
+    dateTimeToString(dateTime)
+  }
+ 
+  private def currentDateTime(timezone: String): ZonedDateTime = {
+    val zoneId = ZoneId.of(timezone)
+    ZonedDateTime.now(zoneId)
+    }
+
+  private def dateTimeToString(dateTime: ZonedDateTime): String =
+    formatter.format(dateTime)
+}
+
+13.1.3 THE TIMEAPP EXECUTABLE OBJECT
+Your next task is to define an executable object, called TimeApp, containing the logic to ask a time zone in standard input, compute the time zone, and print it in the terminal.
+
+Listing 13.4 The TimeApp object
+
+// file src/main/scala/org/example/time/TimeApp.scala
+
+package org.example.time
+
+import java.time.format.DateTimeFormatter
+import scala.io.StdIn
+
+object TimeApp extends App {                                 ❶
+
+    val timezone = StdIn.readLine("Give me a timezone:  ")   ❷
+    val timePrinter =
+      new TimePrinter(DateTimeFormatter.RFC_1123_DATE_TIME)  ❸
+    println(timePrinter.now(timezone))                       ❹
+}
+
+❶ TimeApp is an executable object because it extends the trait App.
+
+❷ It requests a string in input from the terminal.
+
+❸ It creates an instance of TimePrinter.
+
+❹ It computes and prints the current time in the time zone.
+
+Your application is now ready to run.
+
+13.1.4 LET’S TRY IT OUT!
+It’s time to see your program in action. Navigate to the root folder for your project and execute the command sbt run to compile and execute the code. After a few seconds, you should see that the application is waiting for you to provide a time zone:
+
+[info] Running org.example.time.TimeApp 
+Give me a timezone:
+For example, you can enter the time zone “Asia/Tokyo” and get a result that looks similar to the following:
+
+[info] Running org.example.time.TimeApp 
+Give me a timezone:  Asia/Tokyo
+Fri, 24 June 2021 05:50:31 +0900
+If you enter an invalid or unrecognized time zone, the script will error with an exception:
+
+[error] (run-main-0) java.time.zone.ZoneRulesException: Unknown time-zone ID: invalid
+[error] java.time.zone.ZoneRulesException: Unknown time-zone ID: invalid
+[error]      at java.time.zone.ZoneRulesProvider.getProvider(ZoneRulesProvider.java:272)
+[...]
+[...more stack trace here...]
+[...]
+[error]      at java.lang.reflect.Method.invoke(Method.java:497)
+[error] Nonzero exit code: 1
+[error] (Compile / run) Nonzero exit code: 1
+Play around with your application. Can you spot any bugs or nonideal behaviors? Let’s discuss a few of them in the next section.
+
+13.2 Possible improvements to our solution
+Congratulations on completing your capstone! Your implementation respects the requirements, but a few improvements are possible. Let’s see some of them and what techniques you’ll learn to overcome them.
+
+Error Handling If a user enters an invalid time zone, your application crashes with a nasty and difficult-to-understand exception. In unit 3, you’ll see how to catch and throw exceptions. You’ll also learn how to create custom exceptions to provide your users with a more descriptive message about the error and its cause.
+
+Time zone Representation Your application is entirely dependent on the java.time package and its definition of time zone. For example, it considers UTC a valid time zone, while utc is invalid. The time zone Asia/Tokyo is also not equivalent to ASIA/TOKYO. Being dependent on the java.time package has two significant implications:
+
+A change in the java.time package drastically affects your application, and it can potentially break it without you realizing it.
+In the future, if you wish to migrate to a different time library, it will be excruciating and painful because your definition of valid time zone lives inside the package java.time.
+
+In future units, you’ll see how to overcome them thanks to data structures such as Map; they will allow you to have a clear separation between how you represent your data and how you manipulate it.
+
+ Summary
+In this capstone, you implemented a sbt application that asks the user for a string representing a valid time zone, and it prints the current date and time in a given time zone.
+
+You created a sbt project, and you used the java.time package to define your business logic.
+
+You implemented the entry point of your application, and you saw it in action.
+
+Finally, we discussed possible improvements for your implementation thanks to the techniques you’ll see in future units.
